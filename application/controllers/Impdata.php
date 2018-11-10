@@ -2,18 +2,142 @@
 
 class Impdata extends CI_Controller {
     function __construct(){
-  parent::__construct();
-          
+          parent::__construct();
+          $this->load->model('m_master');
     }
 
  public function index() {
     $this->load->view('form/db_upload');
  }
 
+ public function upload_master()
+ {
+    $TypeTelcoMaster = $this->input->post('TypeTelcoMaster');
+    $table = 'master_'.$TypeTelcoMaster;
+    $this->load->library(array('PHPExcel','PHPExcel/IOFactory'));
+    $fileName = $this->input->post('fileMaster', TRUE);
+    $config['upload_path'] = './excel/'; 
+    $config['file_name'] = $fileName;
+    $config['allowed_types'] = 'xls|xlsx|csv|ods|ots';
+    $config['max_size'] = 10000;
+
+    $this->load->library('upload', $config);
+    $this->upload->initialize($config); 
+    
+    if (!$this->upload->do_upload('fileMaster')) {
+     $error = array('error' => $this->upload->display_errors());
+     $this->session->set_flashdata('msg','Ada kesalahan dalam upload'); 
+     redirect(''); 
+    } else {
+     $media = $this->upload->data();
+     $inputFileName = 'excel/'.$media['file_name'];
+     
+     try {
+      $inputFileType = IOFactory::identify($inputFileName);
+      $objReader = IOFactory::createReader($inputFileType);
+      $objPHPExcel = $objReader->load($inputFileName);
+     } catch(Exception $e) {
+      die('Error loading file "'.pathinfo($inputFileName,PATHINFO_BASENAME).'": '.$e->getMessage());
+     }
+
+     $sheet = $objPHPExcel->getSheet(0);
+     $highestRow = $sheet->getHighestRow();
+     $highestColumn = $sheet->getHighestColumn();
+
+
+     $arr_result = array();
+     // print_r($highestRow);die();
+     for ($row = 2; $row <= $highestRow; $row++){  
+       $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row,
+         NULL,
+         TRUE,
+         FALSE);
+       $Co_singer = trim($rowData[0][1]);
+       // print_r($Co_singer);die();
+       $Co_title = trim($rowData[0][0]);
+       $RevenueProdigi = trim($rowData[0][2]);
+       $SharePartner = trim($rowData[0][3]);
+       $ShareProdigi = trim($rowData[0][4]);
+       $RoyaltiArtis = trim($rowData[0][5]);
+       $RoyalPencipta = trim($rowData[0][6]);
+       $arr_chk = array(
+        'RevenueProdigi' => $RevenueProdigi,
+        'SharePartner' => $SharePartner,
+        'ShareProdigi' => $ShareProdigi,
+        'RoyaltiArtis' => $RoyaltiArtis,
+        'RoyalPencipta' => $RoyalPencipta,
+       );
+       $keyObj = array('','Co_singer','Co_title','RevenueProdigi','SharePartner','ShareProdigi','RoyaltiArtis','RoyalPencipta');
+       if ($RevenueProdigi == "" || $SharePartner == "" || $ShareProdigi == "" || $RoyaltiArtis == "" || $RoyalPencipta == "") {
+         for ($i=$row + 1; $i <= $highestRow ; $i++) { 
+            $rowDataSearch = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,
+              NULL,
+              TRUE,
+              FALSE);
+            if (strtolower(trim($Co_singer))  == strtolower(trim($rowDataSearch[0][1]))  && strtolower(trim($rowData[0][0]))  == strtolower(trim($rowDataSearch[0][0])) ) {
+              $objNo = 0;
+              $KurArr = 2;
+              foreach ($arr_chk as $key => $value) {
+                if ($value == "" || $value == null) {
+                  $KeyNo = $objNo + $KurArr;
+                  $arr_chk[$key] = $rowDataSearch[0][$KeyNo];
+                }
+                $objNo++;
+              }
+
+              $find = true;
+              foreach ($arr_chk as $key => $value) {
+                if ($value == "" || $value == null) {
+                  $find = false;
+                }
+              }
+
+              if ($find) {
+                break;
+              }
+              
+            }
+            else
+            {
+              break;
+            }
+            $row = $i;
+         }
+       }
+
+       foreach ($arr_chk as $key => $value) {
+         if ($value == "" || $value == null) {
+           if ($key == 'RevenueProdigi') {
+             if ($table == 'master_telkom') {
+               $arr_chk[$key] = 0;
+             } else {
+               $arr_chk[$key] = 100;
+             }
+           } else {
+             $arr_chk[$key] = 0;
+           }
+           
+         }
+         
+       }
+       
+       $data_Save = array(
+        'Co_singer' => $Co_singer,
+        'Co_title' => $Co_title,
+       );
+       $arr_result[] = $data_Save + $arr_chk;
+     }
+     $this->db->insert_batch($table,$arr_result);
+     $this->session->set_flashdata('msg','Berhasil upload ...!!'); 
+     redirect('');
+   }
+ }
+
  public function upload(){
+  $TypeTelcoData = $this->input->post('TypeTelcoData');
+  $table = 'proses_'.$TypeTelcoData;
   $this->load->library(array('PHPExcel','PHPExcel/IOFactory'));
   $fileName = $this->input->post('file', TRUE);
-
   $config['upload_path'] = './excel/'; 
   $config['file_name'] = $fileName;
   $config['allowed_types'] = 'xls|xlsx|csv|ods|ots';
@@ -51,14 +175,8 @@ class Impdata extends CI_Controller {
        TRUE,
        FALSE);
      $temp = array();
-     $sumVascode = 0;
-     $sumTrafic = 0;
      $co_sing = $rowData[0][7];
-     $vas_code = $rowData[0][5];
-     // $vas_code = str_replace('rbt', '', $vas_code);
-     $vas_code1 = $this->searchNumeric($vas_code);
-     $sumVascode = $sumVascode + $vas_code1;
-     $sumTrafic = $sumTrafic + $rowData[0][2];
+     $Price = $rowData[0][4];
      $contentTitle = $rowData[0][6];
      for ($i=$row + 1; $i <= $highestRow ; $i++) { 
         $rowDataSearch = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,
@@ -66,16 +184,7 @@ class Impdata extends CI_Controller {
           TRUE,
           FALSE);
         if ($co_sing == $rowDataSearch[0][7] && $rowData[0][6] == $rowDataSearch[0][6]) {
-          $vas_code = $rowDataSearch[0][5];
-          $vas_code = $this->searchNumeric($vas_code);
-          if ($vas_code != 0) {
-            $sumVascode = $sumVascode + $vas_code;
-            $sumTrafic = $sumTrafic + $rowDataSearch[0][2];
-          }
-          
-          
-          // print_r($sumVascode.';'.$sumTrafic);
-          // die();
+          $Price = $Price + $rowDataSearch[0][4];
         }
         else
         {
@@ -84,75 +193,28 @@ class Impdata extends CI_Controller {
         $row = $i;
      }
 
-     $r_artis = $rowData[0][13];
-     $r_pencipta = $rowData[0][14];
-     $result_r_artis = ($r_artis != "" || $r_artis != null) ? (((int) $sumVascode * $sumTrafic) * $rowData[0][9]) * $r_artis : '';
-     $result_r_pencipta = ($r_pencipta != "" || $r_pencipta != null) ? (((int) $sumVascode * $sumTrafic) * $rowData[0][9]) * $r_pencipta : '';
-     $temp = array($co_sing,
-      array(
-          'contentTitle' => $contentTitle,
-          'sumVascode' => $sumVascode,
-          'sumTrafic' => $sumTrafic,
-          'row' => $row,
-          'result_r_prodigi' => ((int) $sumVascode * $sumTrafic) * $rowData[0][9],
-          'result_shareP' => (((int) $sumVascode * $sumTrafic) * $rowData[0][9]) * $rowData[0][11],
-          'result_shareProdi' => (((int) $sumVascode * $sumTrafic) * $rowData[0][9]) * $rowData[0][12],
-          'result_r_artis' => $result_r_artis,
-          'result_r_pencipta' => $result_r_pencipta,
-            ),
-      );
+     //  get PriceVenueProdigi
+     $getResult = $this->m_master->getResult($Price,$co_sing,$contentTitle,$TypeTelcoData);
 
-     $arr_result[] = $temp;
+     $arr_result[] = array(
+      'Co_singer' => $co_sing,
+      'Co_title' => $contentTitle,
+      'Detail' => $getResult,
+     );
      $data_Save = array(
       'Co_singer' => $co_sing,
       'Co_title' => $contentTitle,
-      'Detail' => json_encode($temp),
+      'Detail' => json_encode($getResult),
      );
-    // $this->db->insert("proses",$data_Save);
+    $this->db->insert($table,$data_Save);
 
-     // $aa = ((int) $rowData[0][2] * $vas_code) * $rowData[0][9];
-     // // $rev_pro = $this->percent($rowData[0][9]);
-     // $result_shareP = $aa * $rowData[0][11];
-     // $result_shareProdi = $aa * $rowData[0][12];
-     // $r_artis = $rowData[0][13];
-     // $r_pencipta = $rowData[0][14];
-     // $result_r_artis = ($r_artis != "" || $r_artis != null) ? $aa * $r_artis : '';
-     // $result_r_pencipta = ($r_pencipta != "" || $r_pencipta != null) ? $aa * $r_pencipta : '';
-     // $arr = array(
-     //    'aa' => $aa,
-     //    'result_shareP' => $result_shareP,
-     //    'result_shareProdi' => $result_shareProdi,
-     //    'result_r_artis' => $result_r_artis,
-     //    'result_r_pencipta' => $result_r_pencipta,
-     //  );
-     // print_r($arr);die();
-   //   $data = array(
-   //   "song_id"=> $rowData[0][0],
-   //   "con_id"=> $rowData[0][1],
-   //   "tot_tra"=> $rowData[0][2],
-   //   "price"=> $rowData[0][3],
-   //   "tot_rev"=> $rowData[0][4],
-   //   "vas_code"=> $rowData[0][5],
-   //   "co_title"=> $rowData[0][6],
-   //   "co_sing"=> $rowData[0][7],
-   //   "cp_name"=> $rowData[0][8],  
-   //   "rev_pro"=> $rowData[0][9],
-   //   "part_name"=> $rowData[0][10],
-   //   "s_part"=> $rowData[0][11],
-   //   "s_pro"=> $rowData[0][12],
-   //   "r_artis"=> $rowData[0][13],
-   //   "r_pencipta"=> $rowData[0][14],
-   //   "mark_cha"=> $rowData[0][15]
-   //  );
-   //  $this->db->insert("ba",$data);
-   // } 
-   // $this->session->set_flashdata('msg','Berhasil upload ...!!'); 
-   // redirect('');
    }
-   $data['data'] = $arr_result;
-   $this->load->view('show',$data);
+   // $data['data'] = $arr_result;
+   // $this->load->view('show',$data);
    // print_r($arr_result);
    // die(); 
+   $this->session->set_flashdata('msg','Berhasil upload ...!!'); 
+   redirect('');
   } 
   
  }
@@ -191,7 +253,8 @@ class Impdata extends CI_Controller {
 
  public function expExcel()
  {
-
+  $TypeTelcoExport = $this->input->post('TypeTelcoExport');
+  $table = 'proses_'.$TypeTelcoExport;
   include APPPATH.'third_party/PHPExcel/PHPExcel.php';
   $excel2 = PHPExcel_IOFactory::createReader('Excel2007');
   $excel2 = $excel2->load('BA.xlsx'); // Empty Sheet
@@ -215,33 +278,42 @@ class Impdata extends CI_Controller {
       'left' => array('style'  => PHPExcel_Style_Border::BORDER_THIN) // Set border left dengan garis tipis
     )
   );
+  $PriceSharePartner = 0;
+  $PriceShareProdigi = 0;
+  $PriceRoyaltiArtis = 0;
+  $PriceRoyalPencipta = 0;
 
-  $sql = 'select * from proses where Co_singer = ? and Co_title = ?';
-  $query = $this->db->query($sql,array($Co_singer,$Co_title))->result_array();
+  if ($Co_title == "" || $Co_title == null) {
+    $sql = 'select * from '.$table.' where Co_singer = ?';
+    $query = $this->db->query($sql,array($Co_singer))->result_array();
+  } elseif ($Co_title != "" || $Co_title != null) {
+    $sql = 'select * from '.$table.' where Co_singer = ? and Co_title = ?';
+    $query = $this->db->query($sql,array($Co_singer,$Co_title))->result_array();
+  } 
+  else
+  {
+    $query = array();
+  }
+  
+  
   if (count($query) > 0) {
-    $Detail = $query[0]['Detail'];
-    $Detail = json_decode($Detail);
-    $Detail = $Detail[1];
-    // $temp = array($co_sing,
-    //  array(
-    //      'contentTitle' => $contentTitle,
-    //      'sumVascode' => $sumVascode,
-    //      'sumTrafic' => $sumTrafic,
-    //      'row' => $row,
-    //      'result_r_prodigi' => ((int) $sumVascode * $sumTrafic) * $rowData[0][9],
-    //      'result_shareP' => (((int) $sumVascode * $sumTrafic) * $rowData[0][9]) * $rowData[0][11],
-    //      'result_shareProdi' => (((int) $sumVascode * $sumTrafic) * $rowData[0][9]) * $rowData[0][12],
-    //      'result_r_artis' => $result_r_artis,
-    //      'result_r_pencipta' => $result_r_pencipta,
-    //        ),
-    //  );
-    // print_r($Detail->result_shareP);die();
+    for ($i=0; $i < count($query); $i++) { 
+      $Detail = $query[$i]['Detail'];
+      $Detail = json_decode($Detail);
+      
+      $PriceSharePartner = $PriceSharePartner + $Detail->PriceSharePartner;
+      $PriceShareProdigi = $PriceShareProdigi + $Detail->PriceShareProdigi;
+      $PriceRoyaltiArtis = $PriceRoyaltiArtis + $Detail->PriceRoyaltiArtis;
+      $PriceRoyalPencipta = $PriceRoyalPencipta + $Detail->PriceRoyalPencipta;
+    }
+    
+
     $excel3->setCellValue('F12', $Co_singer);
     $excel3->setCellValue('F13', $Co_title); 
-    $excel3->setCellValue('I15', $Detail->result_shareP); 
-    $excel3->setCellValue('I16', $Detail->result_shareProdi); 
-    $excel3->setCellValue('I17', $Detail->result_r_artis); 
-    $excel3->setCellValue('I18', $Detail->result_r_pencipta); 
+    $excel3->setCellValue('I15', $PriceSharePartner); 
+    $excel3->setCellValue('I16', $PriceShareProdigi); 
+    $excel3->setCellValue('I17', $PriceRoyaltiArtis); 
+    $excel3->setCellValue('I18', $PriceRoyalPencipta); 
 
     $objWriter = PHPExcel_IOFactory::createWriter($excel2, 'Excel2007');
     // We'll be outputting an excel file  
@@ -257,6 +329,21 @@ class Impdata extends CI_Controller {
     redirect('');
   }
 
+ }
+
+ public function clearDB()
+ {
+  $sql = "show tables like '%proses%'";
+  $query=$this->db->query($sql, array())->result_array();
+  foreach ($query as $key) {
+    foreach ($key as $keya => $value) {
+      $sql = "TRUNCATE TABLE ".$value;
+      $query=$this->db->query($sql, array());
+    }
+  }
+
+  $this->session->set_flashdata('msg','Finish'); 
+  redirect('');
  }
 }
  

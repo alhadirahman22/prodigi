@@ -12,15 +12,67 @@
   </head>
   <body>
     <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <form action="<?php echo base_url("impdata/clearDB"); ?>" enctype="multipart/form-data" method="post">
+                    <div class="row">
+                        <div class="col-xs-3 offset-md-8">
+                            <input type="submit" value="ClearData" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     	<div class="row">
     		<div class="col-md-12">
     			<?php echo $this->session->flashdata('msg'); ?> 
-    			<form action="<?php echo base_url("impdata/upload"); ?>" enctype="multipart/form-data" method="post">
-    			<input name="file" type="file" />
-    			<input type="submit" value="Import File" />
+    			<form action="<?php echo base_url("impdata/upload_master"); ?>" enctype="multipart/form-data" method="post">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <select name = "TypeTelcoMaster">
+                                <option value="telkom" selected>Telkom Prodigi</option>
+                                <option value="telkom_proa">Telkom Proaktif</option>
+                                <option value="xl">XL Prodigi</option>
+                                <option value="xl_proa">XL Proaktif</option>
+                                <option value="isat_proa">Isat Proaktif</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-9" style="margin-left: 5px;">
+                           <div class="form-group">
+                               <label>Import Master</label>
+                               <input name="fileMaster" type="file" />
+                               <input type="submit" value="Import Master" />
+                           </div> 
+                        </div>
+                    </div>
     			</form>
     		</div>	
     	</div>
+        <div class="row">
+            <div class="col-md-12">
+                <?php echo $this->session->flashdata('msg'); ?> 
+                <form action="<?php echo base_url("impdata/upload"); ?>" enctype="multipart/form-data" method="post">
+                    <div class="row" style="margin-top: 10px">
+                        <div class="col-xs-3">
+                            <select name = "TypeTelcoData">
+                                <option value="telkom" selected>Telkom Prodigi</option>
+                                <option value="telkom_proa">Telkom Proaktif</option>
+                                <option value="xl">XL Prodigi</option>
+                                <option value="xl_proa">XL Proaktif</option>
+                                <option value="isat_proa">Isat Proaktif</option>
+                            </select>
+                        </div>
+                        <div class="col-xs-9" style="margin-left: 5px;">
+                           <div class="form-group">
+                               <label>Import Data</label>
+                               <input name="file" type="file" />
+                               <input type="submit" value="Import File" />
+                           </div> 
+                        </div>
+                    </div>
+                </form>
+            </div>  
+        </div>
     	<div class="row" style="margin-top: 10px">
     		<div class="col-md-12">
     			<form action="<?php echo base_url("expExcel"); ?>" enctype="multipart/form-data" method="post">
@@ -38,6 +90,19 @@
     					</div>
     				</div>
     			</div>
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <select name = "TypeTelcoExport">
+                                <option value="telkom" selected>Telkom Prodigi</option>
+                                <option value="telkom_proa">Telkom Proaktif</option>
+                                <option value="xl">XL Prodigi</option>
+                                <option value="xl_proa">XL Proaktif</option>
+                                <option value="isat_proa">Isat Proaktif</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
     			<div class="form-group">
     				<div class="row">
     					<div class="col-xs-3">
