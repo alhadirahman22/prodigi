@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 100128
 File Encoding         : 65001
 
-Date: 2018-11-10 14:01:31
+Date: 2018-11-10 14:30:35
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -23,9 +23,11 @@ CREATE TABLE `master` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
   `Co_singer` varchar(255) DEFAULT NULL,
   `Co_title` varchar(255) DEFAULT NULL,
+  `RevenueProdigi` decimal(3,2) DEFAULT NULL,
   `SharePartner` decimal(3,2) DEFAULT NULL,
   `ShareProdigi` decimal(3,2) DEFAULT NULL,
-  `RoyaltiArtis` varchar(255) DEFAULT NULL,
+  `RoyaltiArtis` decimal(3,2) DEFAULT NULL,
+  `RoyalPencipta` decimal(3,2) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
