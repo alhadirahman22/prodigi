@@ -49,8 +49,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | Examples:	my-controller/index	-> my_controller/index
 |		my-controller/my-method	-> my_controller/my_method
 */
-$route['default_controller'] = 'impdata';
+$route['default_controller'] = 'login';
+$route['login'] = 'login';
+$route['logout'] = "login/logout";
+
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+$route['dashboard'] = "dashboard";
 $route['expExcel'] = 'impdata/expExcel';
+
+$route['config/usermanagement'] = "config/user_management";
+$route['config/usermanagement/user_data'] = "config/user_data";
+$route['config/usermanagement/page_modal_user_data'] = "config/page_modal_user_data";
+$route['config/usermanagement/userdata_action'] = "config/userdata_action";
+
+$route['master'] = "master";
+$route['master/(:any)'] = 'master/Page';
+$route['master/upload/data'] = 'master/upload_master';

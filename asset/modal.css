@@ -1,0 +1,62 @@
+.modal-header {
+    padding:9px 15px;
+    border-bottom:1px solid #eee;
+    background-color: #0480be;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+     border-top-left-radius: 5px;
+     border-top-right-radius: 5px;
+ }
+ .modal-footer {
+    background-color: white;
+ }
+
+ .modal2 {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                url('http://i.stack.imgur.com/FhHRx.gif') 
+                50% 50% 
+                no-repeat;
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading {
+    overflow: hidden;   
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+body.loading .modal2 {
+    display: block;
+}
+
+#pdf tbody tr:hover, #pdf tbody tr td.highlighted {
+    background-color: #E6FF99;
+}
+td{
+    cursor: grab;
+}
+
+.datatableserverside tbody tr:hover, #pdf tbody tr td.highlighted {
+    background-color: #E6FF99;
+}
+td{
+    cursor: grab;
+}
+
+.inlineTable {
+            display: inline-table;
+}
+
+.floatedTable{
+            float:left;
+}
