@@ -9,6 +9,12 @@ class M_master extends CI_Model {
     {
         parent::__construct();
     }
+
+    public function delete_id_table_all_db($ID,$table)
+    {
+        $sql = "delete from ".$table." where ID = ".$ID;
+        $query=$this->db->query($sql, array());
+    }
     
     public function showData($tabel)
     {
@@ -200,5 +206,20 @@ class M_master extends CI_Model {
 
         return $arr_result;
         
+    }
+
+    public function dtmastertype()
+    {
+        $arr = array();
+        $sql = "show tables like '%master%'";
+        $query=$this->db->query($sql, array())->result_array();
+        foreach ($query as $key) {
+          foreach ($key as $keya => $value) {
+            $c = explode('_', $value);
+            $arr[] = $c[1];
+          }
+        }
+
+        return $arr;
     }
 }

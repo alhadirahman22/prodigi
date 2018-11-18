@@ -2,15 +2,15 @@
 Navicat MySQL Data Transfer
 
 Source Server         : local
-Source Server Version : 100128
+Source Server Version : 100136
 Source Host           : localhost:3306
 Source Database       : ciblog
 
 Target Server Type    : MYSQL
-Target Server Version : 100128
+Target Server Version : 100136
 File Encoding         : 65001
 
-Date: 2018-11-10 20:05:12
+Date: 2018-11-18 18:44:07
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -24,10 +24,10 @@ CREATE TABLE `master_isat_proa` (
   `Co_singer` varchar(255) DEFAULT NULL,
   `Co_title` varchar(255) DEFAULT NULL,
   `RevenueProdigi` decimal(10,2) DEFAULT NULL,
-  `SharePartner` decimal(3,2) DEFAULT NULL,
-  `ShareProdigi` decimal(3,2) DEFAULT NULL,
-  `RoyaltiArtis` decimal(3,2) DEFAULT NULL,
-  `RoyalPencipta` decimal(3,2) DEFAULT NULL,
+  `SharePartner` decimal(10,2) DEFAULT NULL,
+  `ShareProdigi` decimal(10,2) DEFAULT NULL,
+  `RoyaltiArtis` decimal(10,2) DEFAULT NULL,
+  `RoyalPencipta` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -44,10 +44,10 @@ CREATE TABLE `master_telkom` (
   `Co_singer` varchar(255) DEFAULT NULL,
   `Co_title` varchar(255) DEFAULT NULL,
   `RevenueProdigi` decimal(10,2) DEFAULT NULL,
-  `SharePartner` decimal(3,2) DEFAULT NULL,
-  `ShareProdigi` decimal(3,2) DEFAULT NULL,
-  `RoyaltiArtis` decimal(3,2) DEFAULT NULL,
-  `RoyalPencipta` decimal(3,2) DEFAULT NULL,
+  `SharePartner` decimal(10,2) DEFAULT NULL,
+  `ShareProdigi` decimal(10,2) DEFAULT NULL,
+  `RoyaltiArtis` decimal(10,2) DEFAULT NULL,
+  `RoyalPencipta` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -64,10 +64,10 @@ CREATE TABLE `master_telkom_proa` (
   `Co_singer` varchar(255) DEFAULT NULL,
   `Co_title` varchar(255) DEFAULT NULL,
   `RevenueProdigi` decimal(10,2) DEFAULT NULL,
-  `SharePartner` decimal(3,2) DEFAULT NULL,
-  `ShareProdigi` decimal(3,2) DEFAULT NULL,
-  `RoyaltiArtis` decimal(3,2) DEFAULT NULL,
-  `RoyalPencipta` decimal(3,2) DEFAULT NULL,
+  `SharePartner` decimal(10,2) DEFAULT NULL,
+  `ShareProdigi` decimal(10,2) DEFAULT NULL,
+  `RoyaltiArtis` decimal(10,2) DEFAULT NULL,
+  `RoyalPencipta` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -84,10 +84,10 @@ CREATE TABLE `master_xl` (
   `Co_singer` varchar(255) DEFAULT NULL,
   `Co_title` varchar(255) DEFAULT NULL,
   `RevenueProdigi` decimal(10,2) DEFAULT NULL,
-  `SharePartner` decimal(3,2) DEFAULT NULL,
-  `ShareProdigi` decimal(3,2) DEFAULT NULL,
-  `RoyaltiArtis` decimal(3,2) DEFAULT NULL,
-  `RoyalPencipta` decimal(3,2) DEFAULT NULL,
+  `SharePartner` decimal(10,2) DEFAULT NULL,
+  `ShareProdigi` decimal(10,2) DEFAULT NULL,
+  `RoyaltiArtis` decimal(10,2) DEFAULT NULL,
+  `RoyalPencipta` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=80 DEFAULT CHARSET=latin1;
 
@@ -142,7 +142,7 @@ INSERT INTO `master_xl` VALUES ('45', 'Kristina', 'kangennya sama kamu', '100.00
 INSERT INTO `master_xl` VALUES ('46', 'Kristina', 'kapan putus', '100.00', '0.00', '0.00', '0.00', '0.40');
 INSERT INTO `master_xl` VALUES ('47', 'Kristina', 'kekasih hati', '100.00', '0.00', '0.00', '0.00', '0.40');
 INSERT INTO `master_xl` VALUES ('48', 'Kristina', 'keseriusan kamu', '100.00', '0.00', '0.00', '0.00', '0.40');
-INSERT INTO `master_xl` VALUES ('49', 'Kristina', 'ketemuan yu', '100.00', '0.00', '0.00', '0.00', '0.40');
+INSERT INTO `master_xl` VALUES ('49', 'Kristina', 'ketemuan yu', '100.00', '0.00', '0.00', '0.00', '0.25');
 INSERT INTO `master_xl` VALUES ('50', 'Kristina', 'kita saling nyaman', '100.00', '0.00', '0.00', '0.00', '0.40');
 INSERT INTO `master_xl` VALUES ('51', 'Kristina', 'lagi cape', '100.00', '0.00', '0.00', '0.00', '0.40');
 INSERT INTO `master_xl` VALUES ('52', 'Kristina', 'lagi galau', '100.00', '0.00', '0.00', '0.00', '0.40');
@@ -163,16 +163,9 @@ INSERT INTO `master_xl` VALUES ('66', 'Kristina', 'selamat datang 2018', '100.00
 INSERT INTO `master_xl` VALUES ('67', 'Kristina', 'semakin sayang', '100.00', '0.00', '0.00', '0.00', '0.40');
 INSERT INTO `master_xl` VALUES ('68', 'Kristina', 'semangat ya sayang', '100.00', '0.00', '0.00', '0.00', '0.40');
 INSERT INTO `master_xl` VALUES ('69', 'Kristina', 'SetelahKamuPergi', '100.00', '0.00', '0.00', '0.00', '0.40');
-INSERT INTO `master_xl` VALUES ('70', 'Kristina', 'sini peluk', '100.00', '0.00', '0.00', '0.00', '0.40');
-INSERT INTO `master_xl` VALUES ('71', 'Kristina', 'telfon pacar', '100.00', '0.00', '0.00', '0.00', '0.40');
-INSERT INTO `master_xl` VALUES ('72', 'Kristina', 'tidur dulu', '100.00', '0.00', '0.00', '0.00', '0.40');
-INSERT INTO `master_xl` VALUES ('73', 'Kristina', 'tuhan jaga dia', '100.00', '0.00', '0.00', '0.00', '0.40');
-INSERT INTO `master_xl` VALUES ('74', 'Kristina', 'ungkapin dong', '100.00', '0.00', '0.00', '0.00', '0.40');
-INSERT INTO `master_xl` VALUES ('75', 'Neng Euis', 'Cinta Sejati', '100.00', '0.65', '0.00', '0.00', '0.00');
-INSERT INTO `master_xl` VALUES ('76', 'Neng Euis', 'Cintaku Untukmu', '100.00', '0.65', '0.00', '0.00', '0.00');
-INSERT INTO `master_xl` VALUES ('77', 'Neng Euis', 'Rasanya Hambar', '100.00', '0.65', '0.00', '0.00', '0.00');
-INSERT INTO `master_xl` VALUES ('78', 'Neng Euis', 'Tetap Bertahan', '100.00', '0.65', '0.00', '0.00', '0.00');
-INSERT INTO `master_xl` VALUES ('79', 'Neng Euis', 'Tolong Jaga Dirinya', '100.00', '0.65', '0.00', '0.00', '0.00');
+INSERT INTO `master_xl` VALUES ('70', 'Kristina', 'sini peluk', '1.00', '0.00', '0.00', '0.00', '0.40');
+INSERT INTO `master_xl` VALUES ('71', 'Kristina', 'telfon pacar', '1.00', '0.00', '0.00', '0.00', '0.40');
+INSERT INTO `master_xl` VALUES ('72', 'Kristina', 'tidur dulu', '1.00', '0.00', '0.00', '0.00', '0.40');
 
 -- ----------------------------
 -- Table structure for master_xl_proa
@@ -183,10 +176,10 @@ CREATE TABLE `master_xl_proa` (
   `Co_singer` varchar(255) DEFAULT NULL,
   `Co_title` varchar(255) DEFAULT NULL,
   `RevenueProdigi` decimal(10,2) DEFAULT NULL,
-  `SharePartner` decimal(3,2) DEFAULT NULL,
-  `ShareProdigi` decimal(3,2) DEFAULT NULL,
-  `RoyaltiArtis` decimal(3,2) DEFAULT NULL,
-  `RoyalPencipta` decimal(3,2) DEFAULT NULL,
+  `SharePartner` decimal(10,2) DEFAULT NULL,
+  `ShareProdigi` decimal(10,2) DEFAULT NULL,
+  `RoyaltiArtis` decimal(10,2) DEFAULT NULL,
+  `RoyalPencipta` decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -273,3 +266,25 @@ CREATE TABLE `proses_xl_proa` (
 -- ----------------------------
 -- Records of proses_xl_proa
 -- ----------------------------
+
+-- ----------------------------
+-- Table structure for user
+-- ----------------------------
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Username` varchar(255) NOT NULL,
+  `Password` varchar(255) NOT NULL,
+  `Name` varchar(255) DEFAULT NULL,
+  `Auth` enum('SuperAdmin','Administrator','Operator','Guest') NOT NULL,
+  `Active` tinyint(4) NOT NULL DEFAULT '1' COMMENT '0 : Not Active, 1 : Active',
+  PRIMARY KEY (`ID`),
+  UNIQUE KEY `Username` (`Username`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+
+-- ----------------------------
+-- Records of user
+-- ----------------------------
+INSERT INTO `user` VALUES ('1', 'admin', '8843028fefce50a6de50acdf064ded27', 'IT', 'SuperAdmin', '1');
+INSERT INTO `user` VALUES ('2', 'adi', '8843028fefce50a6de50acdf064ded27', 'Alhadi', 'SuperAdmin', '1');
+INSERT INTO `user` VALUES ('3', 'davit', '8843028fefce50a6de50acdf064ded27', 'Davit Chandra', 'SuperAdmin', '1');

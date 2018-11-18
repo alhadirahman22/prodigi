@@ -74,12 +74,19 @@ $cd_akses = $this->session->userdata('Auth');
   }
   </style>
 
-  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-  <!--[if lt IE 9]>
-  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-  <![endif]-->
+  <style type="text/css">
+    .tableData thead th,.tableData tfoot td {
+
+        text-align: center;
+        background: #20485A;
+        color: #FFFFFF;
+
+    }
+
+    .tableData>thead>tr>th, .tableData>tbody>tr>th, .tableData>tfoot>tr>th, .tableData>thead>tr>td, .tableData>tbody>tr>td, .tableData>tfoot>tr>td {
+        border: 1px solid #b7b7b7
+    }
+  </style>
 </head>
 <body class="hold-transition skin-black sidebar-mini fixed" style="font-family: calibri;">
 <div class="wrapper">
@@ -119,12 +126,12 @@ $cd_akses = $this->session->userdata('Auth');
     <section class="sidebar">
       <ul class="sidebar-menu">
         <li class="header">MAIN NAVIGATION</li>
-        <li class="treeview">
+        <li class="treeview <?php echo ($this->uri->segment(1) == 'dashboard') ? 'active' : '' ?>">
           <a href="<?php echo base_url();?>dashboard">
             <i class="fa fa-dashboard"></i> <span>Dashboard</span></i>
           </a>
         </li>
-        <li class="treeview">
+        <li class="treeview <?php echo ($this->uri->segment(1) == 'master') ? 'active' : '' ?>">
           <a href="<?php echo base_url();?>master">
             <i class="fa fa-folder"></i> <span>Master</span></i>
           </a>
@@ -135,14 +142,14 @@ $cd_akses = $this->session->userdata('Auth');
           </a>
         </li>
         <?php if (in_array($cd_akses, array('SuperAdmin'))): ?>
-        <li class="treeview">
+        <li class="treeview <?php echo ($this->uri->segment(1)== 'config') ? 'active' : '' ?>">
           <a href="#">
             <i class="fa fa-map"></i>
             <span>Config</span>
             <i class="fa fa-angle-left pull-right"></i>
           </a>
           <ul class="treeview-menu">
-            <li><a href="<?php echo base_url();?>config/usermanagement"><i class="fa fa-circle-o"></i> User Management</a></li>
+            <li class="<?php echo ($this->uri->segment(2)== 'usermanagement') ? 'active' : '' ?>"><a href="<?php echo base_url();?>config/usermanagement"><i class="fa fa-circle-o"></i> User Management</a></li>
             <li><a href="<?php echo base_url();?>config/cleardata"><i class="fa fa-circle-o"></i> Clear Data</a></li>
           </ul>
         </li>

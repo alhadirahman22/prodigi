@@ -18,18 +18,11 @@
 	            <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Master</h4>
 	        </div>
 	        <div class="panel-body">
-	            <div class="tabbable tabbable-custom tabbable-full-width btn-read setRule">
-	                <ul class="nav nav-tabs">
-	                    <li class="active">
-	                        <a href="javascript:void(0)" class="pageRule" page = "Data">Data</a>
-	                    </li>
-	                </ul>
-	                <div style="padding-top: 30px;border-top: 1px solid #cccccc">
-	                    <div class="row" id = "pageSetRule" style="margin-left: 0px;margin-right: 0px">
-	                       
-	                    </div>
+	            <div style="padding-top: 30px;border-top: 1px solid #cccccc">
+	                <div class="row" id = "pageSetRule" style="margin-left: 0px;margin-right: 0px">
+	                   
 	                </div>
-	            </div>            
+	            </div>           
 	        </div>
 		</div>
 	</div>
@@ -37,13 +30,6 @@
 <script type="text/javascript">
 $(document).ready(function() {
     LoadPage('Data');
-    $(".pageRule").click(function(){
-        var Page = $(this).attr('page');
-        $(".setRule li").removeClass('active');
-        $(this).parent().addClass('active');
-        LoadPage(Page)
-    })
-
 }); // exit document Function
 
 function LoadPage(Page)

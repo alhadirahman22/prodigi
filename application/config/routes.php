@@ -67,3 +67,5 @@ $route['config/usermanagement/userdata_action'] = "config/userdata_action";
 $route['master'] = "master";
 $route['master/(:any)'] = 'master/Page';
 $route['master/upload/data'] = 'master/upload_master';
+$route['masterdata'] = 'master/masterdata';
+$route['masterdata/submit'] = 'master/masterdata_submit';

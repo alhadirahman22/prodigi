@@ -8,13 +8,12 @@ class Master extends MY_Controller {
  		parent::__construct();
  		$this->load->model('function_model','fungsi',TRUE);
  		$this->load->model('query_model','query',TRUE);
-		$this->load->model('administrator_model','adm',TRUE);
+		$this->load->model('m_master');
  	}
 
  	public function index()
 	{
 		$this->data['main_view'] =  "master\page";
-		$this->data['user_management'] = 'active';
 		$this->load->view('template',$this->data);
 	}
 
@@ -22,6 +21,8 @@ class Master extends MY_Controller {
 	{
 	  $arr_result = array('html' => '','jsonPass' => '');
 	  $uri = $this->uri->segment(2);
+	  // get master
+	  // $this->data['dtmastertype'] = $this->m_master->dtmastertype();
 	  $content = $this->load->view('master/'.$uri,$this->data,true);
 	  $arr_result['html'] = $content;
 	  echo json_encode($arr_result);
@@ -147,5 +148,128 @@ class Master extends MY_Controller {
 	    $this->db->insert_batch($table,$arr_result);
 	    echo json_encode(array('status'=> 1,'msg' => 'Berhasil upload ...!!'));
 	  }
+	}
+
+	public function masterdata()
+	{
+		$TypeData = $this->input->post('TypeData');
+		$auth = $this->input->post('auth');
+		$tbl = 'master_'.$TypeData;
+		$requestData= $_REQUEST;
+		$btn = function($auth,$ID){
+			if ($auth != 'all') {
+				return '';
+			}
+			else
+			{
+				return '<button type="button" class="btn btn-danger btn-delete btn-delete-post"  code = "'.$ID.'"> <i class="fa fa-trash" aria-hidden="true"></i> Delete</button>';
+			}	
+		};
+		$condition = ' where ( Co_singer LIKE "'.$requestData['search']['value'].'%" or Co_title LIKE "'.$requestData['search']['value'].'%" 
+		        )';
+		$sql = 'select count(*) as total from '.$tbl.' '.$condition;
+		$query = $this->db->query($sql)->result_array();
+		$totalData = $query[0]['total'];
+		$No = $requestData['start'] + 1;
+
+		$sql = 'select * from '.$tbl.' '.$condition;
+		$orderBYID = ($requestData['search']['value'] == "") ? ' ID Desc,' : '';
+		$sql.= 'ORDER BY '.$orderBYID.' Co_singer asc,Co_title asc LIMIT '.$requestData['start'].' , '.$requestData['length'].' ';
+		$query = $this->db->query($sql)->result_array();
+
+		$data = array();
+		for($i=0;$i<count($query);$i++){
+		    $nestedData=array();
+		    $row = $query[$i];
+		    $nestedData[] = $No;
+		    $nestedData[] = $row['Co_singer'];
+		    $nestedData[] = $row['Co_title'];
+		    $nestedData[] = ($row['RevenueProdigi'] > 1) ? ((int)($row['RevenueProdigi'])).'%': ($row['RevenueProdigi'] * 100).'%';
+		    $nestedData[] = ($row['SharePartner'] * 100).'%';
+		    $nestedData[] = ($row['ShareProdigi'] * 100).'%';
+		    $nestedData[] = ($row['RoyaltiArtis'] * 100).'%';
+		    $nestedData[] = ($row['RoyalPencipta'] * 100).'%';
+		    $nestedData[] = $btn($auth,$row['ID']);
+		    $nestedData[] = $row['ID'];
+		    $data[] = $nestedData;
+		    $No++;
+		}
+
+		$json_data = array(
+		    "draw"            => intval( $requestData['draw'] ),
+		    "recordsTotal"    => intval($totalData),
+		    "recordsFiltered" => intval($totalData ),
+		    "data"            => $data
+		);
+		echo json_encode($json_data);
+	}
+
+	public function masterdata_submit()
+	{
+		$data = $this->input->post('data');
+		$msg = '';
+		switch ($data['Action']) {
+			case 'add':
+				$FormInsert =  $data['FormInsert'];
+				foreach ($FormInsert as $key) {
+					$dataSave = array();
+					$ID = '';
+					foreach ($key as $keya => $value) {
+						if ($keya != 'ID') {
+							if ($keya  != 'Co_singer' && $keya  != 'Co_title') {
+								$value = $value / 100 ; // for  %
+							}
+							$dataSave[$keya] = $value;
+							
+						}
+						else
+						{
+							$ID = $value;
+						}
+						
+					}
+					$this->db->insert('master_'.$data['TypeData'], $dataSave);
+				}
+				echo json_encode($msg);
+				break;
+			case 'edit':
+				$FormUpdate =  $data['FormUpdate'];
+				foreach ($FormUpdate as $key) {
+					$dataSave = array();
+					$ID = '';
+					foreach ($key as $keya => $value) {
+						if ($keya != 'ID') {
+							if ($keya  != 'Co_singer' && $keya  != 'Co_title') {
+								$value = $value / 100 ; // for  %
+							}
+							$dataSave[$keya] = $value;
+							
+						}
+						else
+						{
+							$ID = $value;
+						}
+						
+					}
+					$this->db->where('ID', $ID);
+					$this->db->update('master_'.$data['TypeData'], $dataSave);
+				}
+				echo json_encode($msg);
+				break;
+			case 'delete':
+				$ID = $data['CDID'];
+				$table = 'master_'.$data['TypeData'];
+				$this->m_master->delete_id_table_all_db($ID,$table);
+			break;
+			case 'cleartbl':
+				$table = 'master_'.$data['TypeData'];
+				$sql = "TRUNCATE TABLE ".$table;
+				$query=$this->db->query($sql, array());	
+			break;
+			
+			default:
+				# code...
+				break;
+		}
 	}
 }
