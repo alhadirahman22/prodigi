@@ -69,3 +69,11 @@ $route['master/(:any)'] = 'master/Page';
 $route['master/upload/data'] = 'master/upload_master';
 $route['masterdata'] = 'master/masterdata';
 $route['masterdata/submit'] = 'master/masterdata_submit';
+
+$route['data'] = "data";
+$route['data/(:any)'] = 'data/Page';
+$route['data/upload/data'] = 'data/upload_data';
+$route['datadata'] = 'data/datadata';
+$route['datadata/submit'] = 'data/datadata_submit';
+$route['datadata/excel'] = 'data/datadata_excel';
+

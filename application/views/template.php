@@ -136,7 +136,7 @@ $cd_akses = $this->session->userdata('Auth');
             <i class="fa fa-folder"></i> <span>Master</span></i>
           </a>
         </li>
-        <li class="treeview">
+        <li class="treeview <?php echo ($this->uri->segment(1)== 'data') ? 'active' : '' ?>">
           <a href="<?php echo base_url();?>data">
             <i class="fa fa-folder-open"></i> <span>Data</span></i>
           </a>
@@ -354,6 +354,50 @@ $cd_akses = $this->session->userdata('Auth');
             '</div>' +
             '</div>');
     }
+
+    function formatRupiah(bilangan) {
+        var number_string = bilangan.toString(),
+            sisa    = number_string.length % 3,
+            rupiah  = number_string.substr(0, sisa),
+            ribuan  = number_string.substr(sisa).match(/\d{3}/g);
+
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        return 'Rp. '+rupiah+',-';
+    }
+
+    function findAndReplace(string, target, replacement) {
+     
+     var i = 0, length = string.length;
+     
+     for (i; i < length; i++) {
+     
+       string = string.replace(target, replacement);
+     
+     }
+     
+     return string;
+     
+    }
+
+    function FormSubmitAuto(action, method, values) {
+        var form = $('<form/>', {
+            action: action,
+            method: method
+        });
+        $.each(values, function() {
+            form.append($('<input/>', {
+                type: 'hidden',
+                name: this.name,
+                value: this.value
+            }));    
+        });
+        // form.attr('target', '_blank');
+        form.appendTo('body').submit();
+    } 
     </script>
 <style type="text/css">
   .table2 {

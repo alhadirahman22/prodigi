@@ -4,7 +4,7 @@
 			<div class="thumbnail">
 				<div class="row">
 					<div class="col-md-12" align="center">
-						<h4>Import Master</h4>
+						<h4>Import Data</h4>
 					</div>
 				</div>
 				<div class="row" style="margin-top: 10px">
@@ -13,7 +13,7 @@
 							<div class="col-md-5">
 								<div class="form-group">
 									<label class="control-label">Type</label>
-								    <select name = "TypeTelcoMaster" class="form-control" id = "TypeTelcoMaster">
+								    <select name = "TypeTelcoMaster" class="form-control" id = "TypeTelcoData">
 								        <option value="telkom" selected>Telkom Prodigi</option>
 								        <option value="telkom_proa">Telkom Proaktif</option>
 								        <option value="xl">XL Prodigi</option>
@@ -37,7 +37,7 @@
 				</div>
 				<div class="row" style="margin-top: 10px">
 					<div class="col-md-10 col-md-offset-1">
-						<a href="<?php echo base_url().'filedownload/template_master.xlsx' ?>">File Template</a>
+						<a href="<?php echo base_url().'filedownload/template_data.xlsx' ?>">File Template</a>
 					</div>
 				</div>
 			</div>
@@ -109,9 +109,9 @@
 	{
 		var form_data = new FormData();
 		var fileData = document.getElementById("ExFile").files[0];
-		var url = base_url_js + "master/upload/data";
-		form_data.append('fileMaster',fileData);
-		form_data.append('TypeTelcoMaster',$("#TypeTelcoMaster").val());
+		var url = base_url_js + "data/upload/data";
+		form_data.append('fileData',fileData);
+		form_data.append('TypeTelcoData',$("#TypeTelcoData").val());
 	  	$.ajax({
 	  	  type:"POST",
 	  	  url:url,
@@ -148,7 +148,7 @@
 	{
 		var OPdtmastertype = '<div class="form-group">'+
 									'<label class="control-label">Type</label>'+
-								    '<select name = "TypeTelcoMaster" class="form-control" id = "TypeTelcoMasterSearch">'+
+								    '<select name = "TypeTelcoMaster" class="form-control" id = "TypeTelcoDataSearch">'+
 								        '<option value="telkom" selected>Telkom Prodigi</option>'+
 								        '<option value="telkom_proa">Telkom Proaktif</option>'+
 								        '<option value="xl">XL Prodigi</option>'+
@@ -176,17 +176,17 @@
 				'</div>';
 			$("#ContentData").empty();
 			$("#ContentData").html(html);
-			var TypeData = $("#TypeTelcoMasterSearch").val();
+			var TypeData = $("#TypeTelcoDataSearch").val();
 			var auth = 'all';
 		getDtTableData('#PageTable',TypeData,auth);	
-		funcEventTypeTelcoMasterSearch();
+		funcEventTypeTelcoDataSearch();
 		FunctEvdataMaster('#PageTable');							
 	}
 
-	function funcEventTypeTelcoMasterSearch()
+	function funcEventTypeTelcoDataSearch()
 	{
-		$("#TypeTelcoMasterSearch").change(function(){
-			var TypeData = $("#TypeTelcoMasterSearch").val();
+		$("#TypeTelcoDataSearch").change(function(){
+			var TypeData = $("#TypeTelcoDataSearch").val();
 			var auth = 'all';
 			getDtTableData('#PageTable',TypeData,auth);
 		})
@@ -224,7 +224,7 @@
 		$(element).before(Action);
 		var html = '<div class = "col-md-12">'+
 						'<div class="table-responsive">'+
-							'<table class="table table-bordered tableData" id ="tableMaster">'+
+							'<table class="table table-bordered tableData" id ="tableData">'+
 							'<thead>'+
 								'<tr>'+
 									'<th>No</th>'+				
@@ -261,14 +261,14 @@
 		              };
 		          };
 
-		var dataTable = $('#tableMaster').DataTable( {
+		var dataTable = $('#tableData').DataTable( {
 		    "processing": true,
 		    "destroy": true,
 		    "serverSide": true,
 		    "iDisplayLength" : 5,
 		    "ordering" : false,
 		    "ajax":{
-		        url : base_url_js+"masterdata", // json datasource
+		        url : base_url_js+"datadata", // json datasource
 		        ordering : false,
 		        type: "post",  // method  , by default get
 		        data : {TypeData : TypeData,auth : auth},
@@ -289,24 +289,30 @@
 	                          .attr('fill', data[2]);            
 		           $( row ).find('td:eq(3)')
 		                       .attr('class', 'RevenueProdigi')            
-		                       .attr('fill', data[3].substr(0, data[3].indexOf('%')));
+		                       .attr('fill', data[3])
+		                       .html(formatRupiah(data[3]))
 		           $( row ).find('td:eq(4)')
 		                       .attr('class', 'SharePartner')            
-		                       .attr('fill', data[4].substr(0, data[4].indexOf('%')));
+		                       .attr('fill', data[4])
+		                       .html(formatRupiah(data[4]))
 		            $( row ).find('td:eq(5)')
 		                        .attr('class', 'ShareProdigi')            
-		                        .attr('fill', data[5].substr(0, data[5].indexOf('%'))); 
+		                        .attr('fill', data[5])
+		                        .html(formatRupiah(data[5])) 
 		            $( row ).find('td:eq(6)')
 		                        .attr('class', 'RoyaltiArtis')            
-		                        .attr('fill', data[6].substr(0, data[6].indexOf('%')));
+		                        .attr('fill', data[6])
+		                        .html(formatRupiah(data[6]))
 		            $( row ).find('td:eq(7)')
 		                        .attr('class', 'RoyalPencipta')            
-		                        .attr('fill', data[7].substr(0, data[7].indexOf('%')));                                                       
+		                        .attr('fill', data[7])
+		                        .html(formatRupiah(data[6]))                                                       
 		    },
 		} );
+		
 		passElementtbl = dataTable;
 
-		$('#tableMaster').on('click', '.btn-delete', function(){
+		$('#tableData').on('click', '.btn-delete', function(){
           var ID = $(this).attr('code');
            $('#NotificationModal .modal-body').html('<div style="text-align: center;"><b>Are you sure ? </b><br> ' +
                '<button type="button" id="confirmYesDelete" class="btn btn-primary" style="margin-right: 5px;">Yes</button>' +
@@ -325,18 +331,18 @@
                     'backdrop' : 'static',
                     'show' : true
                 });
-                var url = base_url_js+'masterdata/submit';
+                var url = base_url_js+'datadata/submit';
                 var aksi = "delete";
                 var data = {
                     Action : aksi,
                     CDID : ID,
-                    TypeData : $("#TypeTelcoMasterSearch").val(),
+                    TypeData : $("#TypeTelcoDataSearch").val(),
                 };
                 $.post(url,{data:data},function (data_json) {
                     setTimeout(function () {
                        toastr.options.fadeOut = 10000;
                        toastr.success('Data berhasil disimpan', 'Success!');
-                       var TypeData = $("#TypeTelcoMasterSearch").val();
+                       var TypeData = $("#TypeTelcoDataSearch").val();
                        var auth = 'all';
                        getDtTableData(element,TypeData,auth);
                        $('#NotificationModal').modal('hide');
@@ -370,13 +376,13 @@
 	                });
 
     				var Action = 'cleartbl';
-                    var url = base_url_js+'masterdata/submit';
+                    var url = base_url_js+'datadata/submit';
                     var data = {
                         Action : Action,
-                        TypeData : $("#TypeTelcoMasterSearch").val(),
+                        TypeData : $("#TypeTelcoDataSearch").val(),
                     };
                     $.post(url,{data:data},function (resultJson) {
-                      var TypeData = $("#TypeTelcoMasterSearch").val();
+                      var TypeData = $("#TypeTelcoDataSearch").val();
                       var auth = 'all';
                       getDtTableData(element,TypeData,auth);	 	
                       $('#NotificationModal').modal('hide');
@@ -392,18 +398,19 @@
 
 		// add
 			$(".btn-add").click(function(){
-				$('#tableMaster > tbody > tr:first').before('<tr>'+
+				$('#tableData > tbody > tr:first').before('<tr>'+
 					'<td>-</td>'+
 					'<td><input type = "text" class = "txtCo_singer"></td>'+
 					'<td><input type = "text" class = "txtCo_title"></td>'+
-					'<td align = "center"><input type = "text" class = "txtRevenueProdigi" value = "0" style = "width : 50px"></td>'+
-					'<td align = "center"><input type = "text" class = "txtSharePartner" value = "0" style = "width : 50px"></td>'+
-					'<td align = "center"><input type = "text" class = "txtShareProdigi" value = "0" style = "width : 50px"></td>'+
-					'<td align = "center"><input type = "text" class = "txtRoyaltiArtis" value = "0" style = "width : 50px"></td>'+
-					'<td align = "center"><input type = "text" class = "txtRoyalPencipta" value = "0" style = "width : 50px"></td>'+
+					'<td align = "center"><input type = "text" class = "txtRevenueProdigi maskMoney" value = "0" style = "width : 100px"></td>'+
+					'<td align = "center"><input type = "text" class = "txtSharePartner maskMoney" value = "0" style = "width : 100px"></td>'+
+					'<td align = "center"><input type = "text" class = "txtShareProdigi maskMoney" value = "0" style = "width : 100px"></td>'+
+					'<td align = "center"><input type = "text" class = "txtRoyaltiArtis maskMoney" value = "0" style = "width : 100px"></td>'+
+					'<td align = "center"><input type = "text" class = "txtRoyalPencipta maskMoney" value = "0" style = "width : 100px"></td>'+
 					'<td align = "center"><button class = "btn btn-danger btn-delete-row"><i class="fa fa-trash" aria-hidden="true"></i> Delete</td>'+
 				'</tr>');
-
+				$('.maskMoney').maskMoney({thousands:'.', decimal:',', precision:0,allowZero: true});
+				$('.maskMoney').maskMoney('mask', '9894');
 				var SaveBtn = '<div class = "row rowSaveTbl" style = "margin-top : 10px"><div class = "col-xs-1 col-md-offset-11"> <button type="button" id="btnSaveTableAdd" class="btn btn-success">Save</button></div></div>';
 				$(".rowSaveTbl").remove();
 				$(element).after(SaveBtn);
@@ -454,26 +461,26 @@
                         var temp = {
                         	Co_singer:txtCo_singer[i],
                         	Co_title:txtCo_title[i],
-                        	RevenueProdigi:txtRevenueProdigi[i],
-                        	SharePartner:txtSharePartner[i],
-                        	ShareProdigi:txtShareProdigi[i],
-                        	RoyaltiArtis:txtRoyaltiArtis[i],
-                        	RoyalPencipta:txtRoyalPencipta[i],
+                        	PriceRevenueProdigi:findAndReplace(txtRevenueProdigi[i], ".", ""),
+                        	PriceSharePartner:findAndReplace(txtSharePartner[i], ".", ""),
+                        	PriceShareProdigi:findAndReplace(txtShareProdigi[i], ".", ""),
+                        	PriceRoyaltiArtis:findAndReplace(txtRoyaltiArtis[i], ".", ""),
+                        	PriceRoyalPencipta:findAndReplace(txtRoyalPencipta[i], ".", ""),
                         }
                         FormInsert.push(temp);
                     }
 
                     var Action = 'add';
-                    var url = base_url_js+'masterdata/submit';
+                    var url = base_url_js+'datadata/submit';
                     var data = {
                         Action : Action,
                         FormInsert : FormInsert,
-                        TypeData : $("#TypeTelcoMasterSearch").val(),
+                        TypeData : $("#TypeTelcoDataSearch").val(),
                     };
                     $.post(url,{data:data},function (resultJson) {
                       var response = jQuery.parseJSON(resultJson);
                       if (response == '') {
-                        var TypeData = $("#TypeTelcoMasterSearch").val();
+                        var TypeData = $("#TypeTelcoDataSearch").val();
                         var auth = 'all';
                         getDtTableData(element,TypeData,auth);
                       }
@@ -494,7 +501,7 @@
 			// console.log('test');
 			editi++;
 			if ($('input.txtCo_singer').length) {
-				var TypeData = $("#TypeTelcoMasterSearch").val();
+				var TypeData = $("#TypeTelcoDataSearch").val();
 				var auth = 'all';
 				getDtTableData('#PageTable',TypeData,auth);	
 				return;
@@ -522,33 +529,36 @@
 
                 $(".RevenueProdigi").each(function(){
                     var val = $(this).attr('fill');
-                    var Input = '<input type = "text" class = "txtRevenueProdigi" value = "'+val+'" style = "width : 50px">';
+                    var Input = '<input type = "text" class = "txtRevenueProdigi maskMoney" value = "'+val+'" style = "width : 100px">';
                     $(this).html(Input);
                 })
 
                 $(".SharePartner").each(function(){
                     var val = $(this).attr('fill');
-                    var Input = '<input type = "text" class = "txtSharePartner" value = "'+val+'" style = "width : 50px">';
+                    var Input = '<input type = "text" class = "txtSharePartner maskMoney" value = "'+val+'" style = "width : 100px">';
                     $(this).html(Input);
                 })
 
                 $(".ShareProdigi").each(function(){
                     var val = $(this).attr('fill');
-                    var Input = '<input type = "text" class = "txtShareProdigi" value = "'+val+'" style = "width : 50px">';
+                    var Input = '<input type = "text" class = "txtShareProdigi maskMoney" value = "'+val+'" style = "width : 100px">';
                     $(this).html(Input);
                 })
 
                 $(".RoyaltiArtis").each(function(){
                     var val = $(this).attr('fill');
-                    var Input = '<input type = "text" class = "txtRoyaltiArtis" value = "'+val+'" style = "width : 50px">';
+                    var Input = '<input type = "text" class = "txtRoyaltiArtis maskMoney" value = "'+val+'" style = "width : 100px">';
                     $(this).html(Input);
                 })
 
                 $(".RoyalPencipta").each(function(){
                     var val = $(this).attr('fill');
-                    var Input = '<input type = "text" class = "txtRoyalPencipta" value = "'+val+'" style = "width : 50px">';
+                    var Input = '<input type = "text" class = "txtRoyalPencipta maskMoney" value = "'+val+'" style = "width : 100px">';
                     $(this).html(Input);
                 })
+
+                $('.maskMoney').maskMoney({thousands:'.', decimal:',', precision:0,allowZero: true});
+                $('.maskMoney').maskMoney('mask', '9894');
 			}
 
 			$("#btnSaveTable").click(function(){
@@ -593,27 +603,27 @@
                         var temp = {
                         	Co_singer:txtCo_singer[i],
                         	Co_title:txtCo_title[i],
-                        	RevenueProdigi:txtRevenueProdigi[i],
-                        	SharePartner:txtSharePartner[i],
-                        	ShareProdigi:txtShareProdigi[i],
-                        	RoyaltiArtis:txtRoyaltiArtis[i],
-                        	RoyalPencipta:txtRoyalPencipta[i],
+                        	PriceRevenueProdigi:findAndReplace(txtRevenueProdigi[i], ".", ""),
+                        	PriceSharePartner:findAndReplace(txtSharePartner[i], ".", ""),
+                        	PriceShareProdigi:findAndReplace(txtShareProdigi[i], ".", ""),
+                        	PriceRoyaltiArtis:findAndReplace(txtRoyaltiArtis[i], ".", ""),
+                        	PriceRoyalPencipta:findAndReplace(txtRoyalPencipta[i], ".", ""),
                             ID : IDpri[i],
                         }
                         FormUpdate.push(temp);
                     }
 
                     var Action = 'edit';
-                    var url = base_url_js+'masterdata/submit';
+                    var url = base_url_js+'datadata/submit';
                     var data = {
                         Action : Action,
                         FormUpdate : FormUpdate,
-                        TypeData : $("#TypeTelcoMasterSearch").val(),
+                        TypeData : $("#TypeTelcoDataSearch").val(),
                     };
                     $.post(url,{data:data},function (resultJson) {
                       var response = jQuery.parseJSON(resultJson);
                       if (response == '') {
-                        var TypeData = $("#TypeTelcoMasterSearch").val();
+                        var TypeData = $("#TypeTelcoDataSearch").val();
                         var auth = 'all';
                         getDtTableData(element,TypeData,auth);
                       }

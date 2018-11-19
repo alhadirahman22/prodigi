@@ -43,110 +43,121 @@ class Master extends MY_Controller {
 	   $this->upload->initialize($config); 
 	   
 	   if (!$this->upload->do_upload('fileMaster')) {
-	    $error = array('error' => $this->upload->display_errors());
-	    $this->session->set_flashdata('msg','Ada kesalahan dalam upload'); 
-	    redirect(''); 
+	    // $error = array('error' => $this->upload->display_errors());
+	    // $this->session->set_flashdata('msg','Ada kesalahan dalam upload'); 
+	    // redirect(''); 
+	    echo json_encode(array('status'=> 0,'msg' => 'Ada kesalahan dalam upload'));
 	   } else {
 	    $media = $this->upload->data();
 	    $inputFileName = 'excel/'.$media['file_name'];
-	    
+	    $filePath = $media['file_path'];
+	    $filename_uploaded = $media['file_name'];
+	    $filenameNew = $this->session->userdata('Name').'_'.date('YmdHis').'_'.$media['file_name'];
+	    // rename file
+	    $old = $filePath.'/'.$filename_uploaded;
+	    $new = $filePath.'/'.$filenameNew;
+	    rename($old, $new);
+	    $inputFileName = 'excel/'.$filenameNew;
 	    try {
 	     $inputFileType = IOFactory::identify($inputFileName);
 	     $objReader = IOFactory::createReader($inputFileType);
 	     $objPHPExcel = $objReader->load($inputFileName);
-	    } catch(Exception $e) {
-	     die('Error loading file "'.pathinfo($inputFileName,PATHINFO_BASENAME).'": '.$e->getMessage());
-	    }
 
-	    $sheet = $objPHPExcel->getSheet(0);
-	    $highestRow = $sheet->getHighestRow();
-	    $highestColumn = $sheet->getHighestColumn();
+	     $sheet = $objPHPExcel->getSheet(0);
+	     $highestRow = $sheet->getHighestRow();
+	     $highestColumn = $sheet->getHighestColumn();
+	     $arr_result = array();
+	     // print_r($highestRow);die();
+	     for ($row = 2; $row <= $highestRow; $row++){  
+	       $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row,
+	         NULL,
+	         TRUE,
+	         FALSE);
+	       $Co_singer = trim($rowData[0][1]);
+	       // print_r($Co_singer);die();
+	       $Co_title = trim($rowData[0][0]);
+	       $RevenueProdigi = trim($rowData[0][2]);
+	       $SharePartner = trim($rowData[0][3]);
+	       $ShareProdigi = trim($rowData[0][4]);
+	       $RoyaltiArtis = trim($rowData[0][5]);
+	       $RoyalPencipta = trim($rowData[0][6]);
+	       $arr_chk = array(
+	        'RevenueProdigi' => $RevenueProdigi,
+	        'SharePartner' => $SharePartner,
+	        'ShareProdigi' => $ShareProdigi,
+	        'RoyaltiArtis' => $RoyaltiArtis,
+	        'RoyalPencipta' => $RoyalPencipta,
+	       );
+	       $keyObj = array('','Co_singer','Co_title','RevenueProdigi','SharePartner','ShareProdigi','RoyaltiArtis','RoyalPencipta');
+	       if ($RevenueProdigi == "" || $SharePartner == "" || $ShareProdigi == "" || $RoyaltiArtis == "" || $RoyalPencipta == "") {
+	         for ($i=$row + 1; $i <= $highestRow ; $i++) { 
+	            $rowDataSearch = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,
+	              NULL,
+	              TRUE,
+	              FALSE);
+	            if (strtolower(trim($Co_singer))  == strtolower(trim($rowDataSearch[0][1]))  && strtolower(trim($rowData[0][0]))  == strtolower(trim($rowDataSearch[0][0])) ) {
+	              $objNo = 0;
+	              $KurArr = 2;
+	              foreach ($arr_chk as $key => $value) {
+	                if ($value == "" || $value == null) {
+	                  $KeyNo = $objNo + $KurArr;
+	                  $arr_chk[$key] = $rowDataSearch[0][$KeyNo];
+	                }
+	                $objNo++;
+	              }
 
+	              $find = true;
+	              foreach ($arr_chk as $key => $value) {
+	                if ($value == "" || $value == null) {
+	                  $find = false;
+	                }
+	              }
 
-	    $arr_result = array();
-	    // print_r($highestRow);die();
-	    for ($row = 2; $row <= $highestRow; $row++){  
-	      $rowData = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row,
-	        NULL,
-	        TRUE,
-	        FALSE);
-	      $Co_singer = trim($rowData[0][1]);
-	      // print_r($Co_singer);die();
-	      $Co_title = trim($rowData[0][0]);
-	      $RevenueProdigi = trim($rowData[0][2]);
-	      $SharePartner = trim($rowData[0][3]);
-	      $ShareProdigi = trim($rowData[0][4]);
-	      $RoyaltiArtis = trim($rowData[0][5]);
-	      $RoyalPencipta = trim($rowData[0][6]);
-	      $arr_chk = array(
-	       'RevenueProdigi' => $RevenueProdigi,
-	       'SharePartner' => $SharePartner,
-	       'ShareProdigi' => $ShareProdigi,
-	       'RoyaltiArtis' => $RoyaltiArtis,
-	       'RoyalPencipta' => $RoyalPencipta,
-	      );
-	      $keyObj = array('','Co_singer','Co_title','RevenueProdigi','SharePartner','ShareProdigi','RoyaltiArtis','RoyalPencipta');
-	      if ($RevenueProdigi == "" || $SharePartner == "" || $ShareProdigi == "" || $RoyaltiArtis == "" || $RoyalPencipta == "") {
-	        for ($i=$row + 1; $i <= $highestRow ; $i++) { 
-	           $rowDataSearch = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,
-	             NULL,
-	             TRUE,
-	             FALSE);
-	           if (strtolower(trim($Co_singer))  == strtolower(trim($rowDataSearch[0][1]))  && strtolower(trim($rowData[0][0]))  == strtolower(trim($rowDataSearch[0][0])) ) {
-	             $objNo = 0;
-	             $KurArr = 2;
-	             foreach ($arr_chk as $key => $value) {
-	               if ($value == "" || $value == null) {
-	                 $KeyNo = $objNo + $KurArr;
-	                 $arr_chk[$key] = $rowDataSearch[0][$KeyNo];
-	               }
-	               $objNo++;
-	             }
-
-	             $find = true;
-	             foreach ($arr_chk as $key => $value) {
-	               if ($value == "" || $value == null) {
-	                 $find = false;
-	               }
-	             }
-
-	             if ($find) {
-	               break;
-	             }
-	             
-	           }
-	           else
-	           {
-	             break;
-	           }
-	           $row = $i;
-	        }
-	      }
-
-	      foreach ($arr_chk as $key => $value) {
-	        if ($value == "" || $value == null) {
-	          if ($key == 'RevenueProdigi') {
-	            if ($table == 'master_telkom') {
-	              $arr_chk[$key] = 0;
-	            } else {
-	              $arr_chk[$key] = 100;
+	              if ($find) {
+	                break;
+	              }
+	              
 	            }
-	          } else {
-	            $arr_chk[$key] = 0;
-	          }
-	          
-	        }
-	        
-	      }
-	      
-	      $data_Save = array(
-	       'Co_singer' => $Co_singer,
-	       'Co_title' => $Co_title,
-	      );
-	      $arr_result[] = $data_Save + $arr_chk;
+	            else
+	            {
+	              break;
+	            }
+	            $row = $i;
+	         }
+	       }
+
+	       foreach ($arr_chk as $key => $value) {
+	         if ($value == "" || $value == null) {
+	           if ($key == 'RevenueProdigi') {
+	             if ($table == 'master_telkom') {
+	               $arr_chk[$key] = 0;
+	             } else {
+	               $arr_chk[$key] = 100;
+	             }
+	           } else {
+	             $arr_chk[$key] = 0;
+	           }
+	           
+	         }
+	         
+	       }
+	       
+	       $data_Save = array(
+	        'Co_singer' => $Co_singer,
+	        'Co_title' => $Co_title,
+	       );
+	       $arr_result[] = $data_Save + $arr_chk;
+	     } // end loop
+	     $this->db->insert_batch($table,$arr_result);
+	     // rename file
+	     $old = $filePath.'/'.$filenameNew;
+	     $new = $filePath.'/'.'_success_'.$filenameNew;
+	     rename($old, $new);
+	     echo json_encode(array('status'=> 1,'msg' => 'Berhasil upload ...!!'));
+	    } catch(Exception $e) {
+	     echo json_encode(array('status'=> 1,'msg' => 'Error loading file "'.pathinfo($inputFileName,PATHINFO_BASENAME).'": '.$e->getMessage()));
 	    }
-	    $this->db->insert_batch($table,$arr_result);
-	    echo json_encode(array('status'=> 1,'msg' => 'Berhasil upload ...!!'));
+
 	  }
 	}
 
