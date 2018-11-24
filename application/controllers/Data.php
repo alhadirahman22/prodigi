@@ -34,7 +34,7 @@ class Data extends MY_Controller {
 		$table = 'proses_'.$TypeTelcoData;
 		$this->load->library(array('PHPExcel','PHPExcel/IOFactory'));
 		$fileName = $this->input->post('fileData', TRUE);
-		$config['upload_path'] = './excel/'; 
+		$config['upload_path'] = './filedownload/'; 
 		$config['file_name'] = $fileName;
 		$config['allowed_types'] = 'xls|xlsx|csv|ods|ots';
 		$config['max_size'] = 10000;
@@ -49,7 +49,7 @@ class Data extends MY_Controller {
 		 echo json_encode(array('status'=> 0,'msg' => $error));
 		} else {
 		 $media = $this->upload->data();
-		 $inputFileName = 'excel/'.$media['file_name'];
+		 $inputFileName = 'filedownload/'.$media['file_name'];
 		 $filePath = $media['file_path'];
 		 $filename_uploaded = $media['file_name'];
 		 $filenameNew = $this->session->userdata('Name').'_'.date('YmdHis').'_'.$media['file_name'];
@@ -57,7 +57,7 @@ class Data extends MY_Controller {
 		 $old = $filePath.'/'.$filename_uploaded;
 		 $new = $filePath.'/'.$filenameNew;
 		 rename($old, $new);
-		 $inputFileName = 'excel/'.$filenameNew;
+		 $inputFileName = 'filedownload/'.$filenameNew;
 		 try {
 		  $inputFileType = IOFactory::identify($inputFileName);
 		  $objReader = IOFactory::createReader($inputFileType);

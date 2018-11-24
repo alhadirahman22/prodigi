@@ -34,7 +34,7 @@ class Master extends MY_Controller {
 	   $table = 'master_'.$TypeTelcoMaster;
 	   $this->load->library(array('PHPExcel','PHPExcel/IOFactory'));
 	   $fileName = $this->input->post('fileMaster', TRUE);
-	   $config['upload_path'] = './excel/'; 
+	   $config['upload_path'] = './filedownload/'; 
 	   $config['file_name'] = $fileName;
 	   $config['allowed_types'] = 'xls|xlsx|csv|ods|ots';
 	   $config['max_size'] = 10000;
@@ -49,7 +49,7 @@ class Master extends MY_Controller {
 	    echo json_encode(array('status'=> 0,'msg' => 'Ada kesalahan dalam upload'));
 	   } else {
 	    $media = $this->upload->data();
-	    $inputFileName = 'excel/'.$media['file_name'];
+	    $inputFileName = 'filedownload/'.$media['file_name'];
 	    $filePath = $media['file_path'];
 	    $filename_uploaded = $media['file_name'];
 	    $filenameNew = $this->session->userdata('Name').'_'.date('YmdHis').'_'.$media['file_name'];
@@ -57,7 +57,7 @@ class Master extends MY_Controller {
 	    $old = $filePath.'/'.$filename_uploaded;
 	    $new = $filePath.'/'.$filenameNew;
 	    rename($old, $new);
-	    $inputFileName = 'excel/'.$filenameNew;
+	    $inputFileName = 'filedownload/'.$filenameNew;
 	    try {
 	     $inputFileType = IOFactory::identify($inputFileName);
 	     $objReader = IOFactory::createReader($inputFileType);
@@ -132,7 +132,7 @@ class Master extends MY_Controller {
 	             if ($table == 'master_telkom') {
 	               $arr_chk[$key] = 0;
 	             } else {
-	               $arr_chk[$key] = 100;
+	               $arr_chk[$key] = 1; // max 100%
 	             }
 	           } else {
 	             $arr_chk[$key] = 0;
