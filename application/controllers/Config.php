@@ -57,4 +57,22 @@ class Config extends MY_Controller {
 		}
 	}
 
+	public function deletefile()
+	{
+		$dir = $this->input->post('dir');
+		unlink($dir);
+	}
+
+	public function cleardataproses()
+	{
+		$sql = "show tables like '%proses%'";
+		$query=$this->db->query($sql, array())->result_array();
+		foreach ($query as $key) {
+		  foreach ($key as $keya => $value) {
+		    $sql = "TRUNCATE TABLE ".$value;
+		    $query=$this->db->query($sql, array());
+		  }
+		}
+	}
+
 }

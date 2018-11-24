@@ -222,4 +222,13 @@ class M_master extends CI_Model {
 
         return $arr;
     }
+
+    public function getAllco_singAutoComplete($Nama,$TypeTelcoExport)
+    {
+        $sql = 'select Co_singer,Co_title from proses_'.$TypeTelcoExport.' 
+            where Co_singer like "'.$Nama.'%" or Co_title like "'.$Nama.'%" 
+            ';
+        $query = $this->db->query($sql)->result_array();
+        return $query;
+    }
 }

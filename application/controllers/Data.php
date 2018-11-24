@@ -52,7 +52,9 @@ class Data extends MY_Controller {
 		 $inputFileName = 'filedownload/'.$media['file_name'];
 		 $filePath = $media['file_path'];
 		 $filename_uploaded = $media['file_name'];
-		 $filenameNew = $this->session->userdata('Name').'_'.date('YmdHis').'_'.$media['file_name'];
+		 $mediafile_name = strtolower($media['file_name']);
+		 $mediafile_name = str_replace('template','t', $mediafile_name);
+		 $filenameNew = '_import_data_'.$TypeTelcoData.'_'.$this->session->userdata('Name').'_'.date('YmdHis').'_'.$mediafile_name;
 		 // rename file
 		 $old = $filePath.'/'.$filename_uploaded;
 		 $new = $filePath.'/'.$filenameNew;
@@ -317,16 +319,21 @@ class Data extends MY_Controller {
 		    $PriceRoyalPencipta = $PriceRoyalPencipta + $Detail->PriceRoyalPencipta;
 		  }
 		  
+		  // get two comma
+		  	 $PriceSharePartner = number_format((float)$PriceSharePartner, 2, '.', '');
+		  	 $PriceShareProdigi = number_format((float)$PriceShareProdigi, 2, '.', '');
+		  	 $PriceRoyaltiArtis = number_format((float)$PriceRoyaltiArtis, 2, '.', '');
+		  	 $PriceRoyalPencipta = number_format((float)$PriceRoyalPencipta, 2, '.', '');
 
 		  $excel3->setCellValue('F12', $Co_singer);
 		  $excel3->setCellValue('F13', $Co_title); 
 		  $excel3->setCellValue('I15', $PriceSharePartner); 
-		  $excel3->setCellValue('I16', $PriceShareProdigi); 
-		  $excel3->setCellValue('I17', $PriceRoyaltiArtis); 
-		  $excel3->setCellValue('I18', $PriceRoyalPencipta); 
+		  //$excel3->setCellValue('I16', $PriceShareProdigi); 
+		  $excel3->setCellValue('I16', $PriceRoyaltiArtis); 
+		  $excel3->setCellValue('I17', $PriceRoyalPencipta); 
 
 		  $objWriter = PHPExcel_IOFactory::createWriter($excel2, 'Excel2007');
-		  $Filename = '_Export_'.$this->session->userdata('Name').'_'.date('YmdHis').'_'.$Co_singer.'-'.$Co_title.'.xlsx';
+		  $Filename = '_Export_'.$TypeTelcoExport.'_'.$this->session->userdata('Name').'_'.date('YmdHis').'_'.$Co_singer.'-'.$Co_title.'.xlsx';
 		  // We'll be outputting an excel file  
 		  header('Content-type: application/vnd.ms-excel'); // jalan ketika tidak menggunakan ajax
 		  // It will be called file.xlss
@@ -339,5 +346,47 @@ class Data extends MY_Controller {
 		//   $this->session->set_flashdata('msg','Failed'); 
 		//   redirect('');
 		// }
+	}
+
+	public function Autocompleteco_sing()
+	{
+		$Nama = $this->input->post('Nama');
+		$TypeTelcoExport = $this->input->post('TypeTelcoExport');
+       $data['response'] = 'true'; //mengatur response
+       $data['message'] = array(); //membuat array
+       $getData = $this->m_master->getAllco_singAutoComplete($Nama,$TypeTelcoExport);
+       for ($i=0; $i < count($getData); $i++) {
+           $data['message'][] = array(
+               'label' => $getData[$i]['Co_singer'].'|'.$getData[$i]['Co_title'],
+               'value' => $getData[$i]['Co_singer']
+           );
+       }
+       echo json_encode($data);
+	}
+
+	public function getAllFile()
+	{
+		$dir    = getcwd().'/filedownload';
+		$arr_result = array();
+		if ($handle = opendir($dir)) {
+			$no = 0;
+		    while (false !== ($entry = readdir($handle))) {
+
+		        if ($entry != "." && $entry != ".." && strpos(strtolower($entry),strtolower('index')) === false && strpos(strtolower($entry),strtolower('template')) === false) {
+		        	$no++;
+		        	$temp = array(
+		        		'No' => $no,
+		        		'File'=> '<a href = "'.base_url().'filedownload/'.$entry.'" >'.$entry.'</a>&nbsp<button type="button" class="btn btn-xs btn-danger btn-delete-file" dir = "'.$dir.'/'.$entry.'"> <i class="fa fa-trash" aria-hidden="true"></i></button>',
+		        		'Delete' => '<button type="button" class="btn btn-xs btn-danger btn-delete-file" dir = "'.$dir.'/'.$entry.'"> <i class="fa fa-trash" aria-hidden="true"></i></button>',
+		        		);
+		            $arr_result[] = $temp;
+		            
+		        }
+		    }
+
+		    closedir($handle);
+
+		}
+		echo json_encode($arr_result);
 	}
 }

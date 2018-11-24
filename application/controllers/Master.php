@@ -52,7 +52,10 @@ class Master extends MY_Controller {
 	    $inputFileName = 'filedownload/'.$media['file_name'];
 	    $filePath = $media['file_path'];
 	    $filename_uploaded = $media['file_name'];
-	    $filenameNew = $this->session->userdata('Name').'_'.date('YmdHis').'_'.$media['file_name'];
+	    $mediafile_name = strtolower($media['file_name']);
+	    $mediafile_name = str_replace('template','t', $mediafile_name);
+
+	    $filenameNew = '_import_master_'.$TypeTelcoMaster.'_'.$this->session->userdata('Name').'_'.date('YmdHis').'_'.$mediafile_name;
 	    // rename file
 	    $old = $filePath.'/'.$filename_uploaded;
 	    $new = $filePath.'/'.$filenameNew;

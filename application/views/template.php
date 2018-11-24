@@ -150,7 +150,7 @@ $cd_akses = $this->session->userdata('Auth');
           </a>
           <ul class="treeview-menu">
             <li class="<?php echo ($this->uri->segment(2)== 'usermanagement') ? 'active' : '' ?>"><a href="<?php echo base_url();?>config/usermanagement"><i class="fa fa-circle-o"></i> User Management</a></li>
-            <li><a href="<?php echo base_url();?>config/cleardata"><i class="fa fa-circle-o"></i> Clear Data</a></li>
+            <li><a href="javascript:void(0);" class="clearDataProses"><i class="fa fa-circle-o"></i> Clear Data</a></li>
           </ul>
         </li>
         <?php endif ?>
@@ -398,6 +398,120 @@ $cd_akses = $this->session->userdata('Auth');
         // form.attr('target', '_blank');
         form.appendTo('body').submit();
     } 
+
+    function LoadDataDownloadInTable(element)
+    {
+      $(element).empty();
+      var url = base_url_js+'getAllFile';
+        $.post(url,function (data_json) {
+          var response = jQuery.parseJSON(data_json);
+          if (response.length == 0) {$(element).html('File tidak ada');return;}
+          // console.log(response);
+          var splitBagi = 5;
+              var split = parseInt(response.length / splitBagi);
+              var sisa = response.length % splitBagi;
+            
+            if (sisa > 0) {
+                  split++;
+            }
+            var getRow = 0;
+          
+        for (var i = 0; i < split; i++) {
+                 if ((sisa > 0) && ((i + 1) == split) ) {
+                                     splitBagi = sisa;    
+                 }
+                 var br = (i > 1) ? 'style = "margin-top : 20px"'  : '';
+                 var html = '<div class = "col-md-6" '+br+'><div class="table-responsive">'+
+                '<table class="table table-bordered tableData" id ="tableData'+i+'">'+
+                '<thead>'+
+                  '<tr>'+
+                    '<th>No</th>'+        
+                    '<th>File</th>'+
+                    // '<th>Delete</th>'+
+                  '</tr>'+
+                '</thead>'+
+                '<tbody>'+
+                '</tbody>'+
+                '</table>'+
+              '</div></div>';
+            $(element).append(html);  
+                 for (var k = 0; k < splitBagi; k++) {
+            $("#tableData"+i+" tbody").append(
+                     '<tr>'+
+                         '<td>'+response[getRow]['No']+'</td>'+
+                         '<td>'+response[getRow]['File']+'</td>'+
+                         // '<td>'+response[getRow]['Delete']+'</td>'+
+                     '</tr>' 
+                     );
+                     getRow++;
+                 }
+                 LoaddataTableStandard2("#tableData"+i);
+            }     
+
+        }).done(function() {
+             
+          })        
+    }
+
+    $(document).on('click','.btn-delete-file', function () {
+      var dir = $(this).attr('dir');
+      $('#NotificationModal .modal-body').html('<div style="text-align: center;"><b>Are you sure ? </b><br> ' +
+          '<button type="button" id="confirmYesDelete" class="btn btn-primary" style="margin-right: 5px;">Yes</button>' +
+          '<button type="button" class="btn btn-default" data-dismiss="modal">No</button>' +
+          '</div>');
+      $('#NotificationModal').modal('show');
+      $("#confirmYesDelete").click(function(){
+       $('#NotificationModal .modal-header').addClass('hide');
+       $('#NotificationModal .modal-body').html('<center>' +
+           '                    <i class="fa fa-refresh fa-spin fa-3x fa-fw"></i>' +
+           '                    <br/>' +
+           '                    Loading Data . . .' +
+           '                </center>');
+       $('#NotificationModal .modal-footer').addClass('hide');
+       $('#NotificationModal').modal({
+           'backdrop' : 'static',
+           'show' : true
+       });
+       var url = base_url_js+'delete-file';
+       $.post(url,{dir:dir},function (data_json) {
+           setTimeout(function () {
+              toastr.options.fadeOut = 10000;
+              toastr.success('Data berhasil disimpan', 'Success!');
+              LoadDataDownloadInTable("#FileDownload_Data");
+              $('#NotificationModal').modal('hide');
+           },500);
+       });
+      })
+    });
+
+    $(document).on('click','.clearDataProses', function () {
+      $('#NotificationModal .modal-body').html('<div style="text-align: center;"><b>Are you sure ? </b><br> ' +
+          '<button type="button" id="confirmYesDelete" class="btn btn-primary" style="margin-right: 5px;">Yes</button>' +
+          '<button type="button" class="btn btn-default" data-dismiss="modal">No</button>' +
+          '</div>');
+      $('#NotificationModal').modal('show');
+      $("#confirmYesDelete").click(function(){
+       $('#NotificationModal .modal-header').addClass('hide');
+       $('#NotificationModal .modal-body').html('<center>' +
+           '                    <i class="fa fa-refresh fa-spin fa-3x fa-fw"></i>' +
+           '                    <br/>' +
+           '                    Loading Data . . .' +
+           '                </center>');
+       $('#NotificationModal .modal-footer').addClass('hide');
+       $('#NotificationModal').modal({
+           'backdrop' : 'static',
+           'show' : true
+       });
+       var url = base_url_js+'clear-data-proses';
+       $.post(url,{auth:'admin'},function (data_json) {
+           setTimeout(function () {
+              toastr.options.fadeOut = 10000;
+              toastr.success('Data berhasil disimpan', 'Success!');
+              $('#NotificationModal').modal('hide');
+           },500);
+       });
+      })
+    });
     </script>
 <style type="text/css">
   .table2 {

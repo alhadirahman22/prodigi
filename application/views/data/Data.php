@@ -207,7 +207,7 @@
 									'<button type="button" class="btn btn-warning btn-edit"> <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</button>'+
 								'</div>'+
 								'<div class = "col-xs-2">'+
-									'<button type="button" class="btn btn-danger btn-clear-tbl"> <i class="fa fa-trash" aria-hidden="true"></i> Clear Master</button>'+	
+									'<button type="button" class="btn btn-danger btn-clear-tbl"> <i class="fa fa-trash" aria-hidden="true"></i> Clear Data</button>'+	
 								'</div>'+
 							'</div>';
 			}

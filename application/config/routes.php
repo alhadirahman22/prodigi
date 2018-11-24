@@ -63,6 +63,9 @@ $route['config/usermanagement'] = "config/user_management";
 $route['config/usermanagement/user_data'] = "config/user_data";
 $route['config/usermanagement/page_modal_user_data'] = "config/page_modal_user_data";
 $route['config/usermanagement/userdata_action'] = "config/userdata_action";
+$route['delete-file'] = 'config/deletefile';
+$route['clear-data-proses'] = 'config/cleardataproses';
+
 
 $route['master'] = "master";
 $route['master/(:any)'] = 'master/Page';
@@ -76,4 +79,7 @@ $route['data/upload/data'] = 'data/upload_data';
 $route['datadata'] = 'data/datadata';
 $route['datadata/submit'] = 'data/datadata_submit';
 $route['datadata/excel'] = 'data/datadata_excel';
+$route['Autocompleteco_sing'] = 'data/Autocompleteco_sing';
+$route['getAllFile'] = 'data/getAllFile';
+
 

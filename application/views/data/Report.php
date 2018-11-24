@@ -57,6 +57,33 @@
 			    { name: 'TypeTelcoExport', value: $("#TypeTelcoData").val() },
 			]);
 		})
-
+		
+		Autocomplete('input[name="co_sing"]');
+		Autocomplete('input[name="co_title"]');
 	}); // exit document Function
+
+	function Autocomplete(element)
+	{
+		$(element).autocomplete({
+          minLength: 3,
+          select: function (event, ui) {
+            event.preventDefault();
+            var selectedObj = ui.item;
+            var getco_title = selectedObj.label;
+            getco_title = getco_title.split('|');
+            $('input[name="co_sing"]').val(selectedObj.value); 
+            $('input[name="co_title"]').val(getco_title[1]); 
+          },
+          source:
+          function(req, add)
+          {
+            var url = base_url_js+'Autocompleteco_sing';
+            var Nama = $(element).val();
+            $.post(url,{Nama:Nama,TypeTelcoExport : $("#TypeTelcoData").val()},function (data_json) {
+                var obj = JSON.parse(data_json);
+                add(obj.message) 
+            })
+          } 
+        })
+	}
 </script>
