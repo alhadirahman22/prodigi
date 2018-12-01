@@ -80,6 +80,7 @@ $route['datadata'] = 'data/datadata';
 $route['datadata/submit'] = 'data/datadata_submit';
 $route['datadata/excel'] = 'data/datadata_excel';
 $route['Autocompleteco_sing'] = 'data/Autocompleteco_sing';
+$route['Autocomplete_search'] = 'data/Autocomplete_search';
 $route['getAllFile'] = 'data/getAllFile';
 
 

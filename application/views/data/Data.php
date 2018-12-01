@@ -235,6 +235,7 @@
 									'<th>Share Prodigi</th>'+
 									'<th>Royalti Artis</th>'+
 									'<th>Royal Pencipta</th>'+
+									'<th>Marketing Chanel</th>'+
 									'<th>Action</th>'+
 								'</tr>'+
 							'</thead>'+
@@ -283,7 +284,7 @@
 	              $( row ).find('td:eq(1)')
 	                          .attr('class', 'Co_singer')	
 	                          .attr('fill', data[1])
-	                          .attr('IDPri', data[9]);
+	                          .attr('IDPri', data[10]);
 	              $( row ).find('td:eq(2)')
 	                          .attr('class', 'Co_title')            
 	                          .attr('fill', data[2]);            
@@ -306,7 +307,11 @@
 		            $( row ).find('td:eq(7)')
 		                        .attr('class', 'RoyalPencipta')            
 		                        .attr('fill', data[7])
-		                        .html(formatRupiah(data[6]))                                                       
+		                        .html(formatRupiah(data[7]))
+		            $( row ).find('td:eq(8)')
+		                        .attr('class', 'MarketingChanel')            
+		                        .attr('fill', data[8])
+		                        .html(formatRupiah(data[8]))                                                                   
 		    },
 		} );
 		
@@ -407,6 +412,7 @@
 					'<td align = "center"><input type = "text" class = "txtShareProdigi maskMoney" value = "0" style = "width : 100px"></td>'+
 					'<td align = "center"><input type = "text" class = "txtRoyaltiArtis maskMoney" value = "0" style = "width : 100px"></td>'+
 					'<td align = "center"><input type = "text" class = "txtRoyalPencipta maskMoney" value = "0" style = "width : 100px"></td>'+
+					'<td align = "center"><input type = "text" class = "txtMarketingChanel maskMoney" value = "0" style = "width : 100px"></td>'+
 					'<td align = "center"><button class = "btn btn-danger btn-delete-row"><i class="fa fa-trash" aria-hidden="true"></i> Delete</td>'+
 				'</tr>');
 				$('.maskMoney').maskMoney({thousands:'.', decimal:',', precision:0,allowZero: true});
@@ -451,6 +457,10 @@
 	                $("input.txtRoyalPencipta").each(function(){
 	                    txtRoyalPencipta.push($(this).val());
 	                })
+	                var txtMarketingChanel = [];
+	                   $("input.txtMarketingChanel").each(function(){
+	                       txtMarketingChanel.push($(this).val());
+	                   })
 	             if (txtCo_singer.length == 0) {
 	             	toastr.error('No Data','!Failed');
 	             	$('#btnSaveTable').prop('disabled',false).html('Save');
@@ -466,6 +476,7 @@
                         	PriceShareProdigi:findAndReplace(txtShareProdigi[i], ".", ""),
                         	PriceRoyaltiArtis:findAndReplace(txtRoyaltiArtis[i], ".", ""),
                         	PriceRoyalPencipta:findAndReplace(txtRoyalPencipta[i], ".", ""),
+                        	PriceMarketingChanel: findAndReplace(txtMarketingChanel[i], ".", ""),
                         }
                         FormInsert.push(temp);
                     }
@@ -557,6 +568,12 @@
                     $(this).html(Input);
                 })
 
+                $(".MarketingChanel").each(function(){
+                    var val = $(this).attr('fill');
+                    var Input = '<input type = "text" class = "txtMarketingChanel maskMoney" value = "'+val+'" style = "width : 100px">';
+                    $(this).html(Input);
+                })
+
                 $('.maskMoney').maskMoney({thousands:'.', decimal:',', precision:0,allowZero: true});
                 $('.maskMoney').maskMoney('mask', '9894');
 			}
@@ -593,6 +610,11 @@
 	                $("input.txtRoyalPencipta").each(function(){
 	                    txtRoyalPencipta.push($(this).val());
 	                })
+
+	                var txtMarketingChanel = [];
+	                   $("input.txtMarketingChanel").each(function(){
+	                       txtMarketingChanel.push($(this).val());
+	                   })
 	             if (txtCo_singer.length == 0) {
 	             	toastr.error('No Data','!Failed');
 	             	$('#btnSaveTable').prop('disabled',false).html('Save');
@@ -608,6 +630,7 @@
                         	PriceShareProdigi:findAndReplace(txtShareProdigi[i], ".", ""),
                         	PriceRoyaltiArtis:findAndReplace(txtRoyaltiArtis[i], ".", ""),
                         	PriceRoyalPencipta:findAndReplace(txtRoyalPencipta[i], ".", ""),
+                        	PriceMarketingChanel:findAndReplace(txtMarketingChanel[i], ".", ""),
                             ID : IDpri[i],
                         }
                         FormUpdate.push(temp);
