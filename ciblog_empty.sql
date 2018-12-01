@@ -2,15 +2,15 @@
 Navicat MySQL Data Transfer
 
 Source Server         : local
-Source Server Version : 100130
+Source Server Version : 100136
 Source Host           : localhost:3306
 Source Database       : ciblog
 
 Target Server Type    : MYSQL
-Target Server Version : 100130
+Target Server Version : 100136
 File Encoding         : 65001
 
-Date: 2018-11-19 16:49:03
+Date: 2018-12-01 18:35:51
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -28,6 +28,11 @@ CREATE TABLE `master_isat_proa` (
   `ShareProdigi` decimal(10,2) DEFAULT NULL,
   `RoyaltiArtis` decimal(10,2) DEFAULT NULL,
   `RoyalPencipta` decimal(10,2) DEFAULT NULL,
+  `MarketingChanel` decimal(10,2) DEFAULT NULL,
+  `Pencipta` varchar(255) DEFAULT NULL,
+  `Partner` varchar(255) DEFAULT NULL,
+  `Artis` varchar(255) DEFAULT NULL,
+  `NmChanel` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -48,6 +53,11 @@ CREATE TABLE `master_telkom` (
   `ShareProdigi` decimal(10,2) DEFAULT NULL,
   `RoyaltiArtis` decimal(10,2) DEFAULT NULL,
   `RoyalPencipta` decimal(10,2) DEFAULT NULL,
+  `MarketingChanel` decimal(10,2) DEFAULT NULL,
+  `Pencipta` varchar(255) DEFAULT NULL,
+  `Partner` varchar(255) DEFAULT NULL,
+  `Artis` varchar(255) DEFAULT NULL,
+  `NmChanel` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -68,6 +78,11 @@ CREATE TABLE `master_telkom_proa` (
   `ShareProdigi` decimal(10,2) DEFAULT NULL,
   `RoyaltiArtis` decimal(10,2) DEFAULT NULL,
   `RoyalPencipta` decimal(10,2) DEFAULT NULL,
+  `MarketingChanel` decimal(10,2) DEFAULT NULL,
+  `Pencipta` varchar(255) DEFAULT NULL,
+  `Partner` varchar(255) DEFAULT NULL,
+  `Artis` varchar(255) DEFAULT NULL,
+  `NmChanel` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -88,6 +103,11 @@ CREATE TABLE `master_xl` (
   `ShareProdigi` decimal(10,2) DEFAULT NULL,
   `RoyaltiArtis` decimal(10,2) DEFAULT NULL,
   `RoyalPencipta` decimal(10,2) DEFAULT NULL,
+  `MarketingChanel` decimal(10,2) DEFAULT NULL,
+  `Pencipta` varchar(255) DEFAULT NULL,
+  `Partner` varchar(255) DEFAULT NULL,
+  `Artis` varchar(255) DEFAULT NULL,
+  `NmChanel` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -108,6 +128,11 @@ CREATE TABLE `master_xl_proa` (
   `ShareProdigi` decimal(10,2) DEFAULT NULL,
   `RoyaltiArtis` decimal(10,2) DEFAULT NULL,
   `RoyalPencipta` decimal(10,2) DEFAULT NULL,
+  `MarketingChanel` decimal(10,2) DEFAULT NULL,
+  `Pencipta` varchar(255) DEFAULT NULL,
+  `Partner` varchar(255) DEFAULT NULL,
+  `Artis` varchar(255) DEFAULT NULL,
+  `NmChanel` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
