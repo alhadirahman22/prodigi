@@ -144,6 +144,7 @@ class M_master extends CI_Model {
             'PriceRoyaltiArtis' => 0,
             'PriceRoyalPencipta' => 0,
             'PriceRevenueProdigiKurang' => 0,
+            'PriceMarketingChanel' => 0,
         );
         $sql = 'select * from master_'.$TypeTelcoData.' where Co_singer = ? and Co_title = ? limit 1';
         $query=$this->db->query($sql, array($co_sing,$contentTitle))->result_array();
@@ -153,6 +154,7 @@ class M_master extends CI_Model {
             $ShareProdigi = $query[0]['ShareProdigi'];
             $RoyaltiArtis = $query[0]['RoyaltiArtis'];
             $RoyalPencipta = $query[0]['RoyalPencipta'];
+            $MarketingChanel = $query[0]['MarketingChanel'];
             $PriceRevenueProdigi = $Price * $RevenueProdigi;
             if ($TypeTelcoData == 'telkom') {
                 if ($RoyaltiArtis <= 0 && $RoyalPencipta <= 0) {
@@ -176,20 +178,8 @@ class M_master extends CI_Model {
                      $PriceShareProdigi = ($PriceRevenueProdigi - ($PriceRoyaltiArtis + $PriceRoyalPencipta) ) * $ShareProdigi;
                      $PriceRevenueProdigiKurang = 'Case 3';
                 }
-                $arr_result = array(
-                    'PriceRevenueProdigi' => $PriceRevenueProdigi,
-                    'PriceSharePartner' => $PriceSharePartner,
-                    'PriceShareProdigi' => $PriceShareProdigi,
-                    'PriceRoyaltiArtis' => $PriceRoyaltiArtis,
-                    'PriceRoyalPencipta' => $PriceRoyalPencipta,
-                    'PriceRevenueProdigiKurang' => $PriceRevenueProdigiKurang,
-                );
-            } else {
-                $PriceRoyaltiArtis = $PriceRevenueProdigi * $RoyaltiArtis;
-                $PriceRoyalPencipta = $PriceRevenueProdigi * $RoyalPencipta;
-                $PriceSharePartner = $PriceRevenueProdigi * $SharePartner;
-                $PriceShareProdigi = $PriceRevenueProdigi * $ShareProdigi;
-                $PriceRevenueProdigiKurang = 'Case 0';
+
+                $PriceMarketingChanel = $PriceRevenueProdigi -($PriceRoyaltiArtis - $PriceRoyalPencipta - $PriceSharePartner) * $MarketingChanel;
 
                 $arr_result = array(
                     'PriceRevenueProdigi' => $PriceRevenueProdigi,
@@ -198,6 +188,25 @@ class M_master extends CI_Model {
                     'PriceRoyaltiArtis' => $PriceRoyaltiArtis,
                     'PriceRoyalPencipta' => $PriceRoyalPencipta,
                     'PriceRevenueProdigiKurang' => $PriceRevenueProdigiKurang,
+                    'PriceMarketingChanel' => $PriceMarketingChanel,
+                );
+            } else {
+                $PriceRoyaltiArtis = $PriceRevenueProdigi * $RoyaltiArtis;
+                $PriceRoyalPencipta = $PriceRevenueProdigi * $RoyalPencipta;
+                $PriceSharePartner = $PriceRevenueProdigi * $SharePartner;
+                $PriceShareProdigi = $PriceRevenueProdigi * $ShareProdigi;
+                $PriceRevenueProdigiKurang = 'Case 0';
+
+                $PriceMarketingChanel = $PriceRevenueProdigi -($PriceRoyaltiArtis - $PriceRoyalPencipta - $PriceSharePartner) * $MarketingChanel;
+
+                $arr_result = array(
+                    'PriceRevenueProdigi' => $PriceRevenueProdigi,
+                    'PriceSharePartner' => $PriceSharePartner,
+                    'PriceShareProdigi' => $PriceShareProdigi,
+                    'PriceRoyaltiArtis' => $PriceRoyaltiArtis,
+                    'PriceRoyalPencipta' => $PriceRoyalPencipta,
+                    'PriceRevenueProdigiKurang' => $PriceRevenueProdigiKurang,
+                    'PriceMarketingChanel' => $PriceMarketingChanel,
                 );
             }
             
@@ -226,8 +235,46 @@ class M_master extends CI_Model {
     public function getAllco_singAutoComplete($Nama,$TypeTelcoExport)
     {
         $sql = 'select Co_singer,Co_title from proses_'.$TypeTelcoExport.' 
-            where Co_singer like "'.$Nama.'%" or Co_title like "'.$Nama.'%" 
+            where Co_singer like "'.$Nama.'%" or Co_title like "'.$Nama.'%"
+            group by Co_singer 
             ';
+        $query = $this->db->query($sql)->result_array();
+        return $query;
+    }
+
+    public function getAllAutoComplete($Nama,$TypeTelcoExport,$field,$postdata)
+    {
+        $where = '';
+        // print_r($postdata);die();
+        foreach ($postdata as $key => $value) {
+            if ($value != '') {
+                if ($key != $field) {
+                    if ($key == 'co_sing') {
+                        $where .= ' where a.Co_singer = "'.$value.'"';
+                    }
+                    elseif($key == 'co_title')
+                    {
+                        $where .= ' and a.Co_title = "'.$value.'"';
+                    }
+                    else
+                    {
+                        if ($key != 'TypeTelcoExport') {
+                            $where .= ' and b.'.ucfirst($key).' = "'.$value.'"';
+                        }
+                        
+                    }
+                }
+            }
+        }
+
+        $where .= ' and b.'.ucfirst($field).' like "'.$Nama.'%"';
+
+        $sql = 'select b.'.ucfirst($field).' from proses_'.$TypeTelcoExport.' as a join
+                master_'.$TypeTelcoExport.' as b on a.Co_singer = b.Co_singer
+                '.$where.'
+                group by b.Co_singer 
+        ';
+
         $query = $this->db->query($sql)->result_array();
         return $query;
     }

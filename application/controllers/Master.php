@@ -84,6 +84,13 @@ class Master extends MY_Controller {
 	       $ShareProdigi = trim($rowData[0][4]);
 	       $RoyaltiArtis = trim($rowData[0][5]);
 	       $RoyalPencipta = trim($rowData[0][6]);
+
+	       // adding
+	       $MarketingChanel = trim($rowData[0][7]);
+	       $Pencipta = trim($rowData[0][8]);
+	       $Partner = trim($rowData[0][10]);
+	       $Artis = trim($rowData[0][9]);
+	       $NmChanel = trim($rowData[0][11]);
 	       $arr_chk = array(
 	        'RevenueProdigi' => $RevenueProdigi,
 	        'SharePartner' => $SharePartner,
@@ -148,6 +155,11 @@ class Master extends MY_Controller {
 	       $data_Save = array(
 	        'Co_singer' => $Co_singer,
 	        'Co_title' => $Co_title,
+	        'MarketingChanel' => $MarketingChanel,
+	        'Pencipta' => $Pencipta,
+	        'Partner' => $Partner,
+	        'Artis' => $Artis,
+	        'NmChanel' => $NmChanel,
 	       );
 	       $arr_result[] = $data_Save + $arr_chk;
 	     } // end loop
@@ -203,6 +215,12 @@ class Master extends MY_Controller {
 		    $nestedData[] = ($row['ShareProdigi'] * 100).'%';
 		    $nestedData[] = ($row['RoyaltiArtis'] * 100).'%';
 		    $nestedData[] = ($row['RoyalPencipta'] * 100).'%';
+		    // adding
+		    $nestedData[] = ($row['MarketingChanel'] * 100).'%';
+		    $nestedData[] = $row['Pencipta'];
+		    $nestedData[] = $row['Artis'];
+		    $nestedData[] = $row['Partner'];
+		    $nestedData[] = $row['NmChanel'];
 		    $nestedData[] = $btn($auth,$row['ID']);
 		    $nestedData[] = $row['ID'];
 		    $data[] = $nestedData;
@@ -230,7 +248,7 @@ class Master extends MY_Controller {
 					$ID = '';
 					foreach ($key as $keya => $value) {
 						if ($keya != 'ID') {
-							if ($keya  != 'Co_singer' && $keya  != 'Co_title') {
+							if ($keya  != 'Co_singer' && $keya  != 'Co_title' && $keya  != 'Pencipta' && $keya  != 'Partner' && $keya  != 'Artis' && $keya  != 'NmChanel') {
 								$value = $value / 100 ; // for  %
 							}
 							$dataSave[$keya] = $value;
@@ -253,7 +271,7 @@ class Master extends MY_Controller {
 					$ID = '';
 					foreach ($key as $keya => $value) {
 						if ($keya != 'ID') {
-							if ($keya  != 'Co_singer' && $keya  != 'Co_title') {
+							if ($keya  != 'Co_singer' && $keya  != 'Co_title' && $keya  != 'Pencipta' && $keya  != 'Partner' && $keya  != 'Artis' && $keya  != 'NmChanel') {
 								$value = $value / 100 ; // for  %
 							}
 							$dataSave[$keya] = $value;

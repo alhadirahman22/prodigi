@@ -77,9 +77,9 @@ class Data extends MY_Controller {
 		      TRUE,
 		      FALSE);
 		    $temp = array();
-		    $co_sing = $rowData[0][7];
+		    $co_sing = trim($rowData[0][7]);
 		    $Price = $rowData[0][4];
-		    $contentTitle = $rowData[0][6];
+		    $contentTitle = trim($rowData[0][6]);
 		    for ($i=$row + 1; $i <= $highestRow ; $i++) { 
 		       $rowDataSearch = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,
 		         NULL,
@@ -163,12 +163,14 @@ class Data extends MY_Controller {
 		    $PriceShareProdigi = $Detail->PriceShareProdigi;
 		    $PriceRoyaltiArtis = $Detail->PriceRoyaltiArtis;
 		    $PriceRoyalPencipta = $Detail->PriceRoyalPencipta;
+		    $PriceMarketingChanel = $Detail->PriceMarketingChanel;
 
 		    $nestedData[] = $PriceRevenueProdigi;
 		    $nestedData[] = $PriceSharePartner;
 		    $nestedData[] = $PriceShareProdigi;
 		    $nestedData[] = $PriceRoyaltiArtis;
 		    $nestedData[] = $PriceRoyalPencipta;
+		    $nestedData[] = $PriceMarketingChanel;
 		    $nestedData[] = $btn($auth,$row['ID']);
 		    $nestedData[] = $row['ID'];
 		    $data[] = $nestedData;
@@ -272,8 +274,13 @@ class Data extends MY_Controller {
 		$excel2 = PHPExcel_IOFactory::createReader('Excel2007');
 		$excel2 = $excel2->load('filedownload/TemplateLoadExport.xlsx'); // Empty Sheet
 		$excel2->setActiveSheetIndex(0);
+		
 		$Co_singer = $this->input->post('co_sing');
 		$Co_title = $this->input->post('co_title');
+		$Pencipta = $this->input->post('Pencipta');
+		$Partner = $this->input->post('Partner');
+		$Artis = $this->input->post('Artis');
+		$NmChanel = $this->input->post('NmChanel');
 
 		$excel3 = $excel2->getActiveSheet();
 		// $excel3->setCellValue('A3', $GetDateNow.' Jam '.date('H:i'));
@@ -294,18 +301,48 @@ class Data extends MY_Controller {
 		$PriceShareProdigi = 0;
 		$PriceRoyaltiArtis = 0;
 		$PriceRoyalPencipta = 0;
-
-		if ($Co_title == "" || $Co_title == null) {
-		  $sql = 'select * from '.$table.' where Co_singer = ?';
-		  $query = $this->db->query($sql,array($Co_singer))->result_array();
-		} elseif ($Co_title != "" || $Co_title != null) {
-		  $sql = 'select * from '.$table.' where Co_singer = ? and Co_title = ?';
-		  $query = $this->db->query($sql,array($Co_singer,$Co_title))->result_array();
-		} 
-		else
-		{
-		  $query = array();
+		$PriceMarketingChanel =  0;
+		$postdata = $_POST;
+		// if ($Co_title == "" || $Co_title == null) {
+		//   $sql = 'select * from '.$table.' where Co_singer = ?';
+		//   $query = $this->db->query($sql,array($Co_singer))->result_array();
+		// } elseif ($Co_title != "" || $Co_title != null) {
+		//   $sql = 'select * from '.$table.' where Co_singer = ? and Co_title = ?';
+		//   $query = $this->db->query($sql,array($Co_singer,$Co_title))->result_array();
+		// } 
+		// else
+		// {
+		//   $query = array();
+		// }
+		$where = '';
+		foreach ($postdata as $key => $value) {
+		    if ($value != '') {
+		    	if ($key != 'TypeTelcoExport') {
+		    		if ($key == 'co_sing') {
+		    		    $where .= ' where a.Co_singer = "'.$value.'"';
+		    		}
+		    		elseif($key == 'co_title')
+		    		{
+		    		    $where .= ' and a.Co_title = "'.$value.'"';
+		    		}
+		    		else
+		    		{
+		    		    $where .= ' and b.'.ucfirst($key).' = "'.$value.'"';
+		    		}
+		    	}
+	            
+		        
+		    }
 		}
+
+		$sql = 'select a.*,b.Pencipta,b.Partner,b.Artis,b.NmChanel from proses_'.$TypeTelcoExport.' as a join
+		        master_'.$TypeTelcoExport.' as b on a.Co_singer = b.Co_singer
+		        and a.Co_title = b.Co_title
+		        '.$where.'
+		        
+		';
+
+		$query = $this->db->query($sql)->result_array();
 		
 		
 		// if (count($query) > 0) {
@@ -317,6 +354,7 @@ class Data extends MY_Controller {
 		    $PriceShareProdigi = $PriceShareProdigi + $Detail->PriceShareProdigi;
 		    $PriceRoyaltiArtis = $PriceRoyaltiArtis + $Detail->PriceRoyaltiArtis;
 		    $PriceRoyalPencipta = $PriceRoyalPencipta + $Detail->PriceRoyalPencipta;
+		    $PriceMarketingChanel =  $PriceMarketingChanel + $Detail->PriceMarketingChanel;
 		  }
 		  
 		  // get two comma
@@ -324,15 +362,72 @@ class Data extends MY_Controller {
 		  	 $PriceShareProdigi = number_format((float)$PriceShareProdigi, 2, '.', '');
 		  	 $PriceRoyaltiArtis = number_format((float)$PriceRoyaltiArtis, 2, '.', '');
 		  	 $PriceRoyalPencipta = number_format((float)$PriceRoyalPencipta, 2, '.', '');
+		  	 $PriceMarketingChanel = number_format((float)$PriceMarketingChanel, 2, '.', '');
 
 		  $excel3->setCellValue('F12', $Co_singer);
 		  $excel3->setCellValue('F13', $Co_title); 
-		  $excel3->setCellValue('I15', $PriceSharePartner); 
+		  $excel3->setCellValue('F14', $Partner); 
+		  $excel3->setCellValue('F15', $Pencipta); 
+		  $excel3->setCellValue('F16', $NmChanel); 
+		  
+		  $excel3->setCellValue('I18', $PriceSharePartner); 
 		  //$excel3->setCellValue('I16', $PriceShareProdigi); 
-		  $excel3->setCellValue('I16', $PriceRoyaltiArtis); 
-		  $excel3->setCellValue('I17', $PriceRoyalPencipta); 
+		  $excel3->setCellValue('I19', $PriceRoyaltiArtis); 
+		  $excel3->setCellValue('I20', $PriceRoyalPencipta); 
+		  $excel3->setCellValue('I21', $PriceMarketingChanel); 
 
 		  $objWriter = PHPExcel_IOFactory::createWriter($excel2, 'Excel2007');
+
+		  // another sheet
+		  $excel2->setActiveSheetIndex(1);
+		  $excel4 = $excel2->getActiveSheet();
+		  $a = 2;
+		  for ($i=0; $i < count($query); $i++) { 
+		  	$no = $i + 1;
+		  	 $excel4->setCellValue('A'.$a, $no); 
+		  	 $excel4->setCellValue('B'.$a, $query[$i]['Co_singer']); 
+		  	 $excel4->setCellValue('C'.$a, $query[$i]['Co_title']); 
+		  	 $excel4->setCellValue('D'.$a, $query[$i]['Pencipta']); 
+		  	 $excel4->setCellValue('E'.$a, $query[$i]['Partner']); 
+		  	 $excel4->setCellValue('F'.$a, $query[$i]['Artis']); 
+		  	 $excel4->setCellValue('G'.$a, $query[$i]['NmChanel']);
+		  	 $Detail = $query[$i]['Detail'];
+		  	 $Detail = json_decode($Detail);
+		  	 
+		  	 $PriceSharePartner = $Detail->PriceSharePartner;
+		  	 $PriceShareProdigi =$Detail->PriceShareProdigi;
+		  	 $PriceRoyaltiArtis = $Detail->PriceRoyaltiArtis;
+		  	 $PriceRoyalPencipta = $Detail->PriceRoyalPencipta;
+		  	 $PriceMarketingChanel =  $Detail->PriceMarketingChanel;
+		  	 $PriceRevenueProdigi =  $Detail->PriceRevenueProdigi;
+
+		  	 $excel4->setCellValue('H'.$a, number_format((float)$PriceRevenueProdigi, 2, '.', '')); 
+		  	 $excel4->setCellValue('I'.$a, number_format((float)$PriceShareProdigi, 2, '.', '')); 
+		  	 $excel4->setCellValue('J'.$a, number_format((float)$PriceSharePartner, 2, '.', '')); 
+		  	 $excel4->setCellValue('K'.$a, number_format((float)$PriceRoyaltiArtis, 2, '.', '')); 
+		  	 $excel4->setCellValue('L'.$a, number_format((float)$PriceRoyalPencipta, 2, '.', '')); 
+		  	 $excel4->setCellValue('M'.$a, number_format((float)$PriceMarketingChanel, 2, '.', ''));
+
+		  	 $excel4->getStyle('A'.$a)->applyFromArray($style_row);
+             $excel4->getStyle('B'.$a)->applyFromArray($style_row);
+             $excel4->getStyle('C'.$a)->applyFromArray($style_row);
+             $excel4->getStyle('D'.$a)->applyFromArray($style_row);
+             $excel4->getStyle('E'.$a)->applyFromArray($style_row);
+             $excel4->getStyle('F'.$a)->applyFromArray($style_row);
+             $excel4->getStyle('G'.$a)->applyFromArray($style_row);
+             $excel4->getStyle('H'.$a)->applyFromArray($style_row);
+             $excel4->getStyle('I'.$a)->applyFromArray($style_row);
+             $excel4->getStyle('J'.$a)->applyFromArray($style_row);
+             $excel4->getStyle('K'.$a)->applyFromArray($style_row);
+             $excel4->getStyle('L'.$a)->applyFromArray($style_row);
+             $excel4->getStyle('M'.$a)->applyFromArray($style_row);
+             $a = $a + 1;  
+		  }
+
+		  foreach(range('A','Z') as $columnID) {
+              $excel2->getActiveSheet()->getColumnDimension($columnID)
+                  ->setAutoSize(true);
+          }
 		  $Filename = '_Export_'.$TypeTelcoExport.'_'.$this->session->userdata('Name').'_'.date('YmdHis').'_'.$Co_singer.'-'.$Co_title.'.xlsx';
 		  // We'll be outputting an excel file  
 		  header('Content-type: application/vnd.ms-excel'); // jalan ketika tidak menggunakan ajax
@@ -357,8 +452,25 @@ class Data extends MY_Controller {
        $getData = $this->m_master->getAllco_singAutoComplete($Nama,$TypeTelcoExport);
        for ($i=0; $i < count($getData); $i++) {
            $data['message'][] = array(
-               'label' => $getData[$i]['Co_singer'].'|'.$getData[$i]['Co_title'],
+               'label' => $getData[$i]['Co_singer'],
                'value' => $getData[$i]['Co_singer']
+           );
+       }
+       echo json_encode($data);
+	}
+
+	public function Autocomplete_search(){
+		$value = $this->input->post('Nama');
+		$field = $this->input->post('attrname');
+		$postdata = $this->input->post('postdata');
+		$TypeTelcoExport = $this->input->post('TypeTelcoExport');
+       $data['response'] = 'true'; //mengatur response
+       $data['message'] = array(); //membuat array
+       $getData = $this->m_master->getAllAutoComplete($value,$TypeTelcoExport,$field,$postdata);
+       for ($i=0; $i < count($getData); $i++) {
+           $data['message'][] = array(
+               'label' => $getData[$i][ucfirst($field)],
+               'value' => $getData[$i][ucfirst($field)]
            );
        }
        echo json_encode($data);

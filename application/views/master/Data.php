@@ -235,6 +235,11 @@
 									'<th>Share Prodigi</th>'+
 									'<th>Royalti Artis</th>'+
 									'<th>Royal Pencipta</th>'+
+									'<th>Marketing Chanel</th>'+
+									'<th>Nama Pencipta</th>'+
+									'<th>Nama Artis</th>'+
+									'<th>Nama Partner</th>'+
+									'<th>Nama Marketing Chanel</th>'+
 									'<th>Action</th>'+
 								'</tr>'+
 							'</thead>'+
@@ -283,7 +288,7 @@
 	              $( row ).find('td:eq(1)')
 	                          .attr('class', 'Co_singer')	
 	                          .attr('fill', data[1])
-	                          .attr('IDPri', data[9]);
+	                          .attr('IDPri', data[14]);
 	              $( row ).find('td:eq(2)')
 	                          .attr('class', 'Co_title')            
 	                          .attr('fill', data[2]);            
@@ -301,7 +306,23 @@
 		                        .attr('fill', data[6].substr(0, data[6].indexOf('%')));
 		            $( row ).find('td:eq(7)')
 		                        .attr('class', 'RoyalPencipta')            
-		                        .attr('fill', data[7].substr(0, data[7].indexOf('%')));                                                       
+		                        .attr('fill', data[7].substr(0, data[7].indexOf('%')));
+		            $( row ).find('td:eq(8)')
+		                        .attr('class', 'MarketingChanel')            
+		                        .attr('fill', data[8].substr(0, data[8].indexOf('%')));
+		            $( row ).find('td:eq(9)')
+		                        .attr('class', 'Pencipta')            
+		                        .attr('fill', data[9]);
+		            $( row ).find('td:eq(10)')
+		                        .attr('class', 'Artis')            
+		                        .attr('fill', data[10]);  
+		            $( row ).find('td:eq(11)')
+		                        .attr('class', 'Partner')            
+		                        .attr('fill', data[11]);
+		            $( row ).find('td:eq(12)')
+		                        .attr('class', 'NmChanel')            
+		                        .attr('fill', data[12]);                           
+
 		    },
 		} );
 		passElementtbl = dataTable;
@@ -401,6 +422,11 @@
 					'<td align = "center"><input type = "text" class = "txtShareProdigi" value = "0" style = "width : 50px"></td>'+
 					'<td align = "center"><input type = "text" class = "txtRoyaltiArtis" value = "0" style = "width : 50px"></td>'+
 					'<td align = "center"><input type = "text" class = "txtRoyalPencipta" value = "0" style = "width : 50px"></td>'+
+					'<td align = "center"><input type = "text" class = "txtMarketingChanel" value = "0" style = "width : 50px"></td>'+
+					'<td><input type = "text" class = "txtPencipta"></td>'+
+					'<td><input type = "text" class = "txtArtis"></td>'+
+					'<td><input type = "text" class = "txtPartner"></td>'+
+					'<td><input type = "text" class = "txtNmChanel"></td>'+
 					'<td align = "center"><button class = "btn btn-danger btn-delete-row"><i class="fa fa-trash" aria-hidden="true"></i> Delete</td>'+
 				'</tr>');
 
@@ -444,6 +470,26 @@
 	                $("input.txtRoyalPencipta").each(function(){
 	                    txtRoyalPencipta.push($(this).val());
 	                })
+	             var txtMarketingChanel = [];
+	                 $("input.txtMarketingChanel").each(function(){
+	                     txtMarketingChanel.push($(this).val());
+	                 })
+	             var txtPencipta = [];
+	                $("input.txtPencipta").each(function(){
+	                    txtPencipta.push($(this).val());
+	                })
+	                var txtArtis = [];
+	                $("input.txtArtis").each(function(){
+	                    txtArtis.push($(this).val());
+	                }) 
+	                var txtPartner = [];
+	                $("input.txtPartner").each(function(){
+	                    txtPartner.push($(this).val());
+	                }) 
+	                var txtNmChanel = [];
+	                $("input.txtNmChanel").each(function(){
+	                    txtNmChanel.push($(this).val());
+	                })       
 	             if (txtCo_singer.length == 0) {
 	             	toastr.error('No Data','!Failed');
 	             	$('#btnSaveTable').prop('disabled',false).html('Save');
@@ -459,6 +505,11 @@
                         	ShareProdigi:txtShareProdigi[i],
                         	RoyaltiArtis:txtRoyaltiArtis[i],
                         	RoyalPencipta:txtRoyalPencipta[i],
+                        	MarketingChanel : txtMarketingChanel[i],
+                        	Pencipta : txtPencipta[i],
+                        	Artis : txtArtis[i],
+                        	Partner : txtPartner[i],
+                        	NmChanel : txtNmChanel[i],
                         }
                         FormInsert.push(temp);
                     }
@@ -549,6 +600,37 @@
                     var Input = '<input type = "text" class = "txtRoyalPencipta" value = "'+val+'" style = "width : 50px">';
                     $(this).html(Input);
                 })
+
+                $(".MarketingChanel").each(function(){
+                    var val = $(this).attr('fill');
+                    var Input = '<input type = "text" class = "txtMarketingChanel" value = "'+val+'" style = "width : 50px">';
+                    $(this).html(Input);
+                })
+
+                $(".Pencipta").each(function(){
+                    var val = $(this).attr('fill');
+                    var Input = '<input type = "text" class = "txtPencipta" value = "'+val+'" style = "width : 50px">';
+                    $(this).html(Input);
+                })
+
+                $(".Partner").each(function(){
+                    var val = $(this).attr('fill');
+                    var Input = '<input type = "text" class = "txtPartner" value = "'+val+'" style = "width : 50px">';
+                    $(this).html(Input);
+                })
+
+                $(".Artis").each(function(){
+                    var val = $(this).attr('fill');
+                    var Input = '<input type = "text" class = "txtArtis" value = "'+val+'" style = "width : 50px">';
+                    $(this).html(Input);
+                })
+
+                $(".NmChanel").each(function(){
+                    var val = $(this).attr('fill');
+                    var Input = '<input type = "text" class = "txtNmChanel" value = "'+val+'" style = "width : 50px">';
+                    $(this).html(Input);
+                })
+
 			}
 
 			$("#btnSaveTable").click(function(){
@@ -583,6 +665,26 @@
 	                $("input.txtRoyalPencipta").each(function(){
 	                    txtRoyalPencipta.push($(this).val());
 	                })
+	             var txtMarketingChanel = [];
+	                 $("input.txtMarketingChanel").each(function(){
+	                     txtMarketingChanel.push($(this).val());
+	                 })
+	             var txtPencipta = [];
+	                $("input.txtPencipta").each(function(){
+	                    txtPencipta.push($(this).val());
+	                })
+	                var txtArtis = [];
+	                $("input.txtArtis").each(function(){
+	                    txtArtis.push($(this).val());
+	                }) 
+	                var txtPartner = [];
+	                $("input.txtPartner").each(function(){
+	                    txtPartner.push($(this).val());
+	                }) 
+	                var txtNmChanel = [];
+	                $("input.txtNmChanel").each(function(){
+	                    txtNmChanel.push($(this).val());
+	                })   
 	             if (txtCo_singer.length == 0) {
 	             	toastr.error('No Data','!Failed');
 	             	$('#btnSaveTable').prop('disabled',false).html('Save');
@@ -598,6 +700,11 @@
                         	ShareProdigi:txtShareProdigi[i],
                         	RoyaltiArtis:txtRoyaltiArtis[i],
                         	RoyalPencipta:txtRoyalPencipta[i],
+                        	MarketingChanel : txtMarketingChanel[i],
+                        	Pencipta : txtPencipta[i],
+                        	Artis : txtArtis[i],
+                        	Partner : txtPartner[i],
+                        	NmChanel : txtNmChanel[i],
                             ID : IDpri[i],
                         }
                         FormUpdate.push(temp);
