@@ -179,7 +179,7 @@ class M_master extends CI_Model {
                      $PriceRevenueProdigiKurang = 'Case 3';
                 }
 
-                $PriceMarketingChanel = $PriceRevenueProdigi -($PriceRoyaltiArtis - $PriceRoyalPencipta - $PriceSharePartner) * $MarketingChanel;
+                $PriceMarketingChanel = ($PriceRevenueProdigi -($PriceRoyaltiArtis - $PriceRoyalPencipta - $PriceSharePartner)) * $MarketingChanel;
 
                 $arr_result = array(
                     'PriceRevenueProdigi' => $PriceRevenueProdigi,
@@ -197,7 +197,7 @@ class M_master extends CI_Model {
                 $PriceShareProdigi = $PriceRevenueProdigi * $ShareProdigi;
                 $PriceRevenueProdigiKurang = 'Case 0';
 
-                $PriceMarketingChanel = $PriceRevenueProdigi -($PriceRoyaltiArtis - $PriceRoyalPencipta - $PriceSharePartner) * $MarketingChanel;
+                $PriceMarketingChanel = ($PriceRevenueProdigi -($PriceRoyaltiArtis - $PriceRoyalPencipta - $PriceSharePartner)) * $MarketingChanel;
 
                 $arr_result = array(
                     'PriceRevenueProdigi' => $PriceRevenueProdigi,
