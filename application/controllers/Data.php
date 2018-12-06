@@ -97,6 +97,12 @@ class Data extends MY_Controller {
 
 		    //  get PriceVenueProdigi
 		    $getResult = $this->m_master->getResult($Price,$co_sing,$contentTitle,$TypeTelcoData);
+		    // add total revenue & total trafic
+		    	$TotalRevenue = $rowData[0][4];
+		    	$TotalTrafic = $rowData[0][2];
+		    	$getResult['TotalRevenue'] = $TotalRevenue;
+		    	$getResult['TotalTrafic'] = $TotalTrafic;
+
 
 		    $arr_result[] = array(
 		     'Co_singer' => $co_sing,
@@ -283,7 +289,21 @@ class Data extends MY_Controller {
 		$NmChanel = $this->input->post('NmChanel');
 
 		$excel3 = $excel2->getActiveSheet();
-		// $excel3->setCellValue('A3', $GetDateNow.' Jam '.date('H:i'));
+
+		$style_col = array(
+		    'font' => array('bold' => true), // Set font nya jadi bold
+		    'alignment' => array(
+		        'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER, // Set text jadi ditengah secara horizontal (center)
+		        'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER // Set text jadi di tengah secara vertical (middle)
+		    ),
+		    'borders' => array(
+		        'top' => array('style'  => PHPExcel_Style_Border::BORDER_THIN), // Set border top dengan garis tipis
+		        'right' => array('style'  => PHPExcel_Style_Border::BORDER_THIN),  // Set border right dengan garis tipis
+		        'bottom' => array('style'  => PHPExcel_Style_Border::BORDER_THIN), // Set border bottom dengan garis tipis
+		        'left' => array('style'  => PHPExcel_Style_Border::BORDER_THIN) // Set border left dengan garis tipis
+		    )
+		);
+
 
 		// Buat sebuah variabel untuk menampung pengaturan style dari isi tabel
 		$style_row = array(
@@ -341,10 +361,10 @@ class Data extends MY_Controller {
 		        '.$where.'
 		        
 		';
-
+		
 		$query = $this->db->query($sql)->result_array();
 		
-		
+		$keyM = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
 		// if (count($query) > 0) {
 		  for ($i=0; $i < count($query); $i++) { 
 		    $Detail = $query[$i]['Detail'];
@@ -382,17 +402,68 @@ class Data extends MY_Controller {
 		  $excel2->setActiveSheetIndex(1);
 		  $excel4 = $excel2->getActiveSheet();
 		  $a = 2;
+		  $h = 1;
+		  $arr_show_header = array();
 		  for ($i=0; $i < count($query); $i++) { 
 		  	$no = $i + 1;
+		  	$Detail = $query[$i]['Detail'];
+		  	$Detail = json_decode($Detail);
+		  	// check price another
+			  	for ($j=$i; $j < count($query); $j++) { 
+			  		$Co_singer1 = $query[$i]['Co_singer'];
+			  		$Co_title1 = $query[$i]['Co_title'];
+
+			  		$Co_singer2 = $query[$j]['Co_singer'];
+			  		$Co_title2 = $query[$j]['Co_title'];
+
+			  		if ($Co_singer1 == $Co_singer2 && $Co_title1 == $Co_title2) {
+			  			$Detail2 = $query[$j]['Detail'];
+			  			$Detail2 = json_decode($Detail2);
+			  			$PriceSharePartner =$Detail2->PriceSharePartner;
+			  			$PriceRoyaltiArtis = $Detail2->PriceRoyaltiArtis;
+			  			$PriceRoyalPencipta = $Detail2->PriceRoyalPencipta;
+			  			$PriceMarketingChanel =$Detail2->PriceMarketingChanel;
+
+			  			if ($PriceSharePartner > 0) {
+			  				$arr_show_header['PriceSharePartner'] = 'SharePartner';
+			  			}
+
+			  			if ($PriceRoyaltiArtis > 0) {
+			  				$arr_show_header['PriceRoyaltiArtis'] = 'RoyaltiArtis';
+			  			}
+
+			  			if ($PriceRoyalPencipta > 0) {
+			  				$arr_show_header['PriceRoyalPencipta'] = 'RoyalPencipta';
+			  			}
+
+			  			if ($PriceMarketingChanel > 0) {
+			  				$arr_show_header['PriceMarketingChanel'] = 'MarketingChanel';
+			  			}
+			  		}
+			  		else
+			  		{
+			  			break;
+			  		}
+			  	}
+
+			  	if (count($arr_show_header) > 0) {
+			  		$z = 10;
+			  		foreach ($arr_show_header as $key => $value) {
+			  			$excel4->setCellValue($keyM[$z].$h, $value);
+			  			$excel4->getStyle($keyM[$z].$h)->applyFromArray($style_col);
+			  			$z++; 
+			  		}
+			  	}
+
 		  	 $excel4->setCellValue('A'.$a, $no); 
 		  	 $excel4->setCellValue('B'.$a, $query[$i]['Co_singer']); 
 		  	 $excel4->setCellValue('C'.$a, $query[$i]['Co_title']); 
-		  	 $excel4->setCellValue('D'.$a, $query[$i]['Pencipta']); 
-		  	 $excel4->setCellValue('E'.$a, $query[$i]['Partner']); 
-		  	 $excel4->setCellValue('F'.$a, $query[$i]['Artis']); 
-		  	 $excel4->setCellValue('G'.$a, $query[$i]['NmChanel']);
-		  	 $Detail = $query[$i]['Detail'];
-		  	 $Detail = json_decode($Detail);
+		  	 $excel4->setCellValue('D'.$a, $Detail->TotalTrafic); 
+		  	 $excel4->setCellValue('E'.$a, $Detail->TotalRevenue);
+		  	 $excel4->setCellValue('F'.$a, $query[$i]['Pencipta']); 
+		  	 $excel4->setCellValue('G'.$a, $query[$i]['Partner']); 
+		  	 $excel4->setCellValue('H'.$a, $query[$i]['Artis']); 
+		  	 $excel4->setCellValue('I'.$a, $query[$i]['NmChanel']);
 		  	 
 		  	 $PriceSharePartner = $Detail->PriceSharePartner;
 		  	 $PriceShareProdigi =$Detail->PriceShareProdigi;
@@ -401,12 +472,23 @@ class Data extends MY_Controller {
 		  	 $PriceMarketingChanel =  $Detail->PriceMarketingChanel;
 		  	 $PriceRevenueProdigi =  $Detail->PriceRevenueProdigi;
 
-		  	 $excel4->setCellValue('H'.$a, number_format((float)$PriceRevenueProdigi, 2, '.', '')); 
-		  	 $excel4->setCellValue('I'.$a, number_format((float)$PriceShareProdigi, 2, '.', '')); 
-		  	 $excel4->setCellValue('J'.$a, number_format((float)$PriceSharePartner, 2, '.', '')); 
-		  	 $excel4->setCellValue('K'.$a, number_format((float)$PriceRoyaltiArtis, 2, '.', '')); 
-		  	 $excel4->setCellValue('L'.$a, number_format((float)$PriceRoyalPencipta, 2, '.', '')); 
-		  	 $excel4->setCellValue('M'.$a, number_format((float)$PriceMarketingChanel, 2, '.', ''));
+		  	 $excel4->setCellValue('J'.$a, number_format((float)$PriceRevenueProdigi, 2, '.', '')); 
+		  	 //$excel4->setCellValue('I'.$a, number_format((float)$PriceShareProdigi, 2, '.', '')); 
+		  	 // $excel4->setCellValue('J'.$a, number_format((float)$PriceSharePartner, 2, '.', '')); 
+		  	 // $excel4->setCellValue('K'.$a, number_format((float)$PriceRoyaltiArtis, 2, '.', '')); 
+		  	 // $excel4->setCellValue('L'.$a, number_format((float)$PriceRoyalPencipta, 2, '.', '')); 
+		  	 // $excel4->setCellValue('M'.$a, number_format((float)$PriceMarketingChanel, 2, '.', ''));
+
+		  	 if (count($arr_show_header) > 0) {
+		  	 	$z = 10;
+		  	 	foreach ($arr_show_header as $key => $value) {
+		  	 		$get =json_decode($query[$i]['Detail'], True);
+		  	 		$get =(array)$get;
+		  	 		$excel4->setCellValue($keyM[$z].$a, number_format((float)$get[$key], 2, '.', ''));
+		  	 		$excel4->getStyle($keyM[$z].$a)->applyFromArray($style_row); 
+		  	 		$z++; 
+		  	 	}
+		  	 }
 
 		  	 $excel4->getStyle('A'.$a)->applyFromArray($style_row);
              $excel4->getStyle('B'.$a)->applyFromArray($style_row);
@@ -418,9 +500,9 @@ class Data extends MY_Controller {
              $excel4->getStyle('H'.$a)->applyFromArray($style_row);
              $excel4->getStyle('I'.$a)->applyFromArray($style_row);
              $excel4->getStyle('J'.$a)->applyFromArray($style_row);
-             $excel4->getStyle('K'.$a)->applyFromArray($style_row);
-             $excel4->getStyle('L'.$a)->applyFromArray($style_row);
-             $excel4->getStyle('M'.$a)->applyFromArray($style_row);
+             // $excel4->getStyle('K'.$a)->applyFromArray($style_row);
+             // $excel4->getStyle('L'.$a)->applyFromArray($style_row);
+             // $excel4->getStyle('M'.$a)->applyFromArray($style_row);
              $a = $a + 1;  
 		  }
 
