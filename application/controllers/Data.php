@@ -80,12 +80,39 @@ class Data extends MY_Controller {
 		    $co_sing = trim($rowData[0][7]);
 		    $Price = $rowData[0][4];
 		    $contentTitle = trim($rowData[0][6]);
+		    // add friend
+		    $F_data = array();
+		    $F_getResult = $this->m_master->getResult($Price,$co_sing,$contentTitle,$TypeTelcoData);
+		    // add total revenue & total trafic
+		    	$TotalRevenue = $rowData[0][4];
+		    	$TotalTrafic = $rowData[0][2];
+		    	$F_getResult['TotalRevenue'] = $TotalRevenue;
+		    	$F_getResult['TotalTrafic'] = $TotalTrafic;
+		    $temp = array(
+		     'Co_singer' => $co_sing,
+		     'Co_title' => $contentTitle,
+		     'Detail' => json_encode($F_getResult),
+		    );
+		    $F_data[] = $temp;
+
 		    for ($i=$row + 1; $i <= $highestRow ; $i++) { 
 		       $rowDataSearch = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i,
 		         NULL,
 		         TRUE,
 		         FALSE);
 		       if ($co_sing == $rowDataSearch[0][7] && $rowData[0][6] == $rowDataSearch[0][6]) {
+		       	 $F_Price = $rowDataSearch[0][4];
+		       	 $F_getResult = $this->m_master->getResult($F_Price,$co_sing,$contentTitle,$TypeTelcoData);
+		       	 $TotalRevenue = $rowDataSearch[0][4];
+		       	 $TotalTrafic = $rowDataSearch[0][2];
+		       	 $F_getResult['TotalRevenue'] = $TotalRevenue;
+		       	 $F_getResult['TotalTrafic'] = $TotalTrafic;
+		       	 $temp = array(
+		       	  'Co_singer' => $co_sing,
+		       	  'Co_title' => $contentTitle,
+		       	  'Detail' => json_encode($F_getResult),
+		       	 );
+		       	 $F_data[] = $temp;
 		         $Price = $Price + $rowDataSearch[0][4];
 		       }
 		       else
@@ -97,22 +124,17 @@ class Data extends MY_Controller {
 
 		    //  get PriceVenueProdigi
 		    $getResult = $this->m_master->getResult($Price,$co_sing,$contentTitle,$TypeTelcoData);
-		    // add total revenue & total trafic
-		    	$TotalRevenue = $rowData[0][4];
-		    	$TotalTrafic = $rowData[0][2];
-		    	$getResult['TotalRevenue'] = $TotalRevenue;
-		    	$getResult['TotalTrafic'] = $TotalTrafic;
 
-
-		    $arr_result[] = array(
-		     'Co_singer' => $co_sing,
-		     'Co_title' => $contentTitle,
-		     'Detail' => $getResult,
-		    );
+		    // $arr_result[] = array(
+		    //  'Co_singer' => $co_sing,
+		    //  'Co_title' => $contentTitle,
+		    //  'Detail' => $getResult,
+		    // );
 		    $data_Save = array(
 		     'Co_singer' => $co_sing,
 		     'Co_title' => $contentTitle,
 		     'Detail' => json_encode($getResult),
+		     'Friend' => json_encode($F_data),
 		    );
 		   $this->db->insert($table,$data_Save);
 
@@ -361,7 +383,7 @@ class Data extends MY_Controller {
 		        '.$where.'
 		        
 		';
-		
+
 		$query = $this->db->query($sql)->result_array();
 		
 		$keyM = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
@@ -405,9 +427,11 @@ class Data extends MY_Controller {
 		  $h = 1;
 		  $arr_show_header = array();
 		  for ($i=0; $i < count($query); $i++) { 
-		  	$no = $i + 1;
 		  	$Detail = $query[$i]['Detail'];
 		  	$Detail = json_decode($Detail);
+		  	$Friend= json_decode($query[$i]['Friend'], True);
+		  	$Friend= (array)$Friend;
+
 		  	// check price another
 			  	for ($j=$i; $j < count($query); $j++) { 
 			  		$Co_singer1 = $query[$i]['Co_singer'];
@@ -455,55 +479,59 @@ class Data extends MY_Controller {
 			  		}
 			  	}
 
-		  	 $excel4->setCellValue('A'.$a, $no); 
-		  	 $excel4->setCellValue('B'.$a, $query[$i]['Co_singer']); 
-		  	 $excel4->setCellValue('C'.$a, $query[$i]['Co_title']); 
-		  	 $excel4->setCellValue('D'.$a, $Detail->TotalTrafic); 
-		  	 $excel4->setCellValue('E'.$a, $Detail->TotalRevenue);
-		  	 $excel4->setCellValue('F'.$a, $query[$i]['Pencipta']); 
-		  	 $excel4->setCellValue('G'.$a, $query[$i]['Partner']); 
-		  	 $excel4->setCellValue('H'.$a, $query[$i]['Artis']); 
-		  	 $excel4->setCellValue('I'.$a, $query[$i]['NmChanel']);
-		  	 
-		  	 $PriceSharePartner = $Detail->PriceSharePartner;
-		  	 $PriceShareProdigi =$Detail->PriceShareProdigi;
-		  	 $PriceRoyaltiArtis = $Detail->PriceRoyaltiArtis;
-		  	 $PriceRoyalPencipta = $Detail->PriceRoyalPencipta;
-		  	 $PriceMarketingChanel =  $Detail->PriceMarketingChanel;
-		  	 $PriceRevenueProdigi =  $Detail->PriceRevenueProdigi;
+			 for ($x=0; $x < count($Friend); $x++) {
+			 	 $no = $x + 1;
+			 	 $F_Detail =  json_decode($Friend[$x]['Detail']);
+ 			  	 $excel4->setCellValue('A'.$a, $no); 
+ 			  	 $excel4->setCellValue('B'.$a, $query[$i]['Co_singer']); 
+ 			  	 $excel4->setCellValue('C'.$a, $query[$i]['Co_title']); 
+ 			  	 $excel4->setCellValue('D'.$a, $F_Detail->TotalTrafic); 
+ 			  	 $excel4->setCellValue('E'.$a, $F_Detail->TotalRevenue);
+ 			  	 $excel4->setCellValue('F'.$a, $query[$i]['Pencipta']); 
+ 			  	 $excel4->setCellValue('G'.$a, $query[$i]['Partner']); 
+ 			  	 $excel4->setCellValue('H'.$a, $query[$i]['Artis']); 
+ 			  	 $excel4->setCellValue('I'.$a, $query[$i]['NmChanel']);
+ 			  	 
+ 			  	 $PriceSharePartner = $F_Detail->PriceSharePartner;
+ 			  	 $PriceShareProdigi =$F_Detail->PriceShareProdigi;
+ 			  	 $PriceRoyaltiArtis = $F_Detail->PriceRoyaltiArtis;
+ 			  	 $PriceRoyalPencipta = $F_Detail->PriceRoyalPencipta;
+ 			  	 $PriceMarketingChanel =  $F_Detail->PriceMarketingChanel;
+ 			  	 $PriceRevenueProdigi =  $F_Detail->PriceRevenueProdigi;
 
-		  	 $excel4->setCellValue('J'.$a, number_format((float)$PriceRevenueProdigi, 2, '.', '')); 
-		  	 //$excel4->setCellValue('I'.$a, number_format((float)$PriceShareProdigi, 2, '.', '')); 
-		  	 // $excel4->setCellValue('J'.$a, number_format((float)$PriceSharePartner, 2, '.', '')); 
-		  	 // $excel4->setCellValue('K'.$a, number_format((float)$PriceRoyaltiArtis, 2, '.', '')); 
-		  	 // $excel4->setCellValue('L'.$a, number_format((float)$PriceRoyalPencipta, 2, '.', '')); 
-		  	 // $excel4->setCellValue('M'.$a, number_format((float)$PriceMarketingChanel, 2, '.', ''));
+ 			  	 $excel4->setCellValue('J'.$a, number_format((float)$PriceRevenueProdigi, 2, '.', '')); 
+ 			  	 //$excel4->setCellValue('I'.$a, number_format((float)$PriceShareProdigi, 2, '.', '')); 
+ 			  	 // $excel4->setCellValue('J'.$a, number_format((float)$PriceSharePartner, 2, '.', '')); 
+ 			  	 // $excel4->setCellValue('K'.$a, number_format((float)$PriceRoyaltiArtis, 2, '.', '')); 
+ 			  	 // $excel4->setCellValue('L'.$a, number_format((float)$PriceRoyalPencipta, 2, '.', '')); 
+ 			  	 // $excel4->setCellValue('M'.$a, number_format((float)$PriceMarketingChanel, 2, '.', ''));
 
-		  	 if (count($arr_show_header) > 0) {
-		  	 	$z = 10;
-		  	 	foreach ($arr_show_header as $key => $value) {
-		  	 		$get =json_decode($query[$i]['Detail'], True);
-		  	 		$get =(array)$get;
-		  	 		$excel4->setCellValue($keyM[$z].$a, number_format((float)$get[$key], 2, '.', ''));
-		  	 		$excel4->getStyle($keyM[$z].$a)->applyFromArray($style_row); 
-		  	 		$z++; 
-		  	 	}
-		  	 }
+ 			  	 if (count($arr_show_header) > 0) {
+ 			  	 	$z = 10;
+ 			  	 	foreach ($arr_show_header as $key => $value) {
+ 			  	 		$get =json_decode($Friend[$x]['Detail'], True);
+ 			  	 		$get =(array)$get;
+ 			  	 		$excel4->setCellValue($keyM[$z].$a, number_format((float)$get[$key], 2, '.', ''));
+ 			  	 		$excel4->getStyle($keyM[$z].$a)->applyFromArray($style_row); 
+ 			  	 		$z++; 
+ 			  	 	}
+ 			  	 }
 
-		  	 $excel4->getStyle('A'.$a)->applyFromArray($style_row);
-             $excel4->getStyle('B'.$a)->applyFromArray($style_row);
-             $excel4->getStyle('C'.$a)->applyFromArray($style_row);
-             $excel4->getStyle('D'.$a)->applyFromArray($style_row);
-             $excel4->getStyle('E'.$a)->applyFromArray($style_row);
-             $excel4->getStyle('F'.$a)->applyFromArray($style_row);
-             $excel4->getStyle('G'.$a)->applyFromArray($style_row);
-             $excel4->getStyle('H'.$a)->applyFromArray($style_row);
-             $excel4->getStyle('I'.$a)->applyFromArray($style_row);
-             $excel4->getStyle('J'.$a)->applyFromArray($style_row);
-             // $excel4->getStyle('K'.$a)->applyFromArray($style_row);
-             // $excel4->getStyle('L'.$a)->applyFromArray($style_row);
-             // $excel4->getStyle('M'.$a)->applyFromArray($style_row);
-             $a = $a + 1;  
+ 			  	 $excel4->getStyle('A'.$a)->applyFromArray($style_row);
+ 	             $excel4->getStyle('B'.$a)->applyFromArray($style_row);
+ 	             $excel4->getStyle('C'.$a)->applyFromArray($style_row);
+ 	             $excel4->getStyle('D'.$a)->applyFromArray($style_row);
+ 	             $excel4->getStyle('E'.$a)->applyFromArray($style_row);
+ 	             $excel4->getStyle('F'.$a)->applyFromArray($style_row);
+ 	             $excel4->getStyle('G'.$a)->applyFromArray($style_row);
+ 	             $excel4->getStyle('H'.$a)->applyFromArray($style_row);
+ 	             $excel4->getStyle('I'.$a)->applyFromArray($style_row);
+ 	             $excel4->getStyle('J'.$a)->applyFromArray($style_row);
+ 	             // $excel4->getStyle('K'.$a)->applyFromArray($style_row);
+ 	             // $excel4->getStyle('L'.$a)->applyFromArray($style_row);
+ 	             // $excel4->getStyle('M'.$a)->applyFromArray($style_row);
+ 	             $a = $a + 1;  
+			}	
 		  }
 
 		  foreach(range('A','Z') as $columnID) {

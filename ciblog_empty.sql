@@ -2,15 +2,15 @@
 Navicat MySQL Data Transfer
 
 Source Server         : local
-Source Server Version : 100136
+Source Server Version : 100130
 Source Host           : localhost:3306
 Source Database       : ciblog
 
 Target Server Type    : MYSQL
-Target Server Version : 100136
+Target Server Version : 100130
 File Encoding         : 65001
 
-Date: 2018-12-01 18:35:51
+Date: 2018-12-06 16:21:19
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -149,6 +149,7 @@ CREATE TABLE `proses_isat_proa` (
   `Co_singer` varchar(255) DEFAULT NULL,
   `Co_title` varchar(255) DEFAULT NULL,
   `Detail` longtext,
+  `Friend` longtext,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -165,6 +166,7 @@ CREATE TABLE `proses_telkom` (
   `Co_singer` varchar(255) DEFAULT NULL,
   `Co_title` varchar(255) DEFAULT NULL,
   `Detail` longtext,
+  `Friend` longtext,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -181,6 +183,7 @@ CREATE TABLE `proses_telkom_proa` (
   `Co_singer` varchar(255) DEFAULT NULL,
   `Co_title` varchar(255) DEFAULT NULL,
   `Detail` longtext,
+  `Friend` longtext,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -197,6 +200,7 @@ CREATE TABLE `proses_xl` (
   `Co_singer` varchar(255) DEFAULT NULL,
   `Co_title` varchar(255) DEFAULT NULL,
   `Detail` longtext,
+  `Friend` longtext,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -213,6 +217,7 @@ CREATE TABLE `proses_xl_proa` (
   `Co_singer` varchar(255) DEFAULT NULL,
   `Co_title` varchar(255) DEFAULT NULL,
   `Detail` longtext,
+  `Friend` longtext,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
