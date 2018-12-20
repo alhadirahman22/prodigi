@@ -167,7 +167,8 @@ class M_master extends CI_Model {
                 elseif ($SharePartner >= 0 || $ShareProdigi >= 0 ) {
                      $PriceRoyaltiArtis = $PriceRevenueProdigi * $RoyaltiArtis;
                      $PriceRoyalPencipta = $PriceRevenueProdigi * $RoyalPencipta;
-                     $PriceSharePartner = ($PriceRevenueProdigi - $PriceRoyaltiArtis) * $SharePartner;
+                     // $PriceSharePartner = ($PriceRevenueProdigi - $PriceRoyaltiArtis) * $SharePartner;
+                     $PriceSharePartner = ($PriceRevenueProdigi - ($PriceRoyaltiArtis + $PriceRoyalPencipta) ) * $SharePartner;
                      $PriceShareProdigi = ($PriceRevenueProdigi - $PriceRoyaltiArtis) * $ShareProdigi;
                      $PriceRevenueProdigiKurang = 'Case 2';
                 }
