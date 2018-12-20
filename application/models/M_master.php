@@ -272,7 +272,7 @@ class M_master extends CI_Model {
         $sql = 'select b.'.ucfirst($field).' from proses_'.$TypeTelcoExport.' as a join
                 master_'.$TypeTelcoExport.' as b on a.Co_singer = b.Co_singer
                 '.$where.'
-                group by b.Co_singer 
+                group by b.'.$field.'
         ';
 
         $query = $this->db->query($sql)->result_array();

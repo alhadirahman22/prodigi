@@ -79,7 +79,7 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#Excel").click(function(){
-			if ($('input[name="co_sing"]').val() == "") {toastr.error('Singer Required','!Failed');return;}
+			if ($('input[name="co_sing"]').val() == "" && $('input[name="Partner"]').val() == "") {toastr.error('Singer or Partner Required','!Failed');return;}
 			var url = base_url_js+'datadata/excel';
 			FormSubmitAuto(url, 'POST', [
 			    { name: 'co_sing', value: $('input[name="co_sing"]').val() },
