@@ -131,11 +131,13 @@ $cd_akses = $this->session->userdata('Auth');
             <i class="fa fa-dashboard"></i> <span>Dashboard</span></i>
           </a>
         </li>
+        <?php if (in_array($cd_akses, array('SuperAdmin'))): ?>
         <li class="treeview <?php echo ($this->uri->segment(1) == 'master') ? 'active' : '' ?>">
           <a href="<?php echo base_url();?>master">
             <i class="fa fa-folder"></i> <span>Master</span></i>
           </a>
         </li>
+        <?php endif ?>
         <li class="treeview <?php echo ($this->uri->segment(1)== 'data') ? 'active' : '' ?>">
           <a href="<?php echo base_url();?>data">
             <i class="fa fa-folder-open"></i> <span>Data</span></i>

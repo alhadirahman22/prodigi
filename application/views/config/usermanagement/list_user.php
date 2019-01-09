@@ -287,7 +287,7 @@ function loaddata()
              '<td>'+no+'</td>' +
              '<td>'+resultJson[i]['Username']+'</td>' +
              '<td>'+resultJson[i]['Name']+'</td>' +
-             '<td>'+auth+'</td>' +
+             '<td>'+resultJson[i]['Auth']+'</td>' +
              '<td>'+status+'</td>' +
              '<td>'+btn_edit+btn_delete+btn_status+'</td>' +
              '</tr>');
