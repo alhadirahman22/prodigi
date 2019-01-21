@@ -14,11 +14,13 @@
 								<div class="form-group">
 									<label class="control-label">Type</label>
 								    <select name = "TypeTelcoMaster" class="form-control" id = "TypeTelcoData">
-								        <option value="telkom" selected>Telkom Prodigi</option>
+								        <!-- <option value="telkom" selected>Telkom Prodigi</option>
 								        <option value="telkom_proa">Telkom Proaktif</option>
 								        <option value="xl">XL Prodigi</option>
 								        <option value="xl_proa">XL Proaktif</option>
-								        <option value="isat_proa">Isat Proaktif</option>
+								        <option value="isat_proa">Isat Proaktif</option> -->
+								        <option value="proa">Proaktif</option>
+								        <option value="">Prodigi</option>
 								    </select>
 								</div>    
 							</div>

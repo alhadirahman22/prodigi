@@ -235,12 +235,54 @@ class M_master extends CI_Model {
 
     public function getAllco_singAutoComplete($Nama,$TypeTelcoExport)
     {
-        $sql = 'select Co_singer,Co_title from proses_'.$TypeTelcoExport.' 
-            where Co_singer like "'.$Nama.'%" or Co_title like "'.$Nama.'%"
-            group by Co_singer 
-            ';
-        $query = $this->db->query($sql)->result_array();
-        return $query;
+        $arrtbl = array();
+        $sqltbl = 'show tables like "%proses%"';
+        $querytbl = $this->db->query($sqltbl)->result_array();
+        foreach ($querytbl as $key => $value) {
+            foreach ($value as $keya) {
+                if ($TypeTelcoExport == 'proa') {
+                    if (strpos($keya, $TypeTelcoExport) !== false) {
+                        $arrtbl[] = $keya;
+                    }
+                }
+                else
+                {
+                    if (strpos($keya, 'proa') === false) {
+                        $arrtbl[] = $keya;
+                    }
+                }
+                
+            }
+        }
+
+        $arr_result = array();
+        for ($i=0; $i < count($arrtbl); $i++) { 
+            $sql = 'select Co_singer,Co_title from '.$arrtbl[$i].'
+                where Co_singer like "'.$Nama.'%" or Co_title like "'.$Nama.'%"
+                group by Co_singer 
+                ';
+            $query = $this->db->query($sql)->result_array();
+            for ($j=0; $j < count($query); $j++) { 
+                $arr_result[] = $query[$j];
+            }
+        }
+
+        $result = array();
+        for ($i=0; $i < count($arr_result); $i++) {
+            $bool = false; 
+            for ($j=0; $j < count($result); $j++) { 
+                if ($arr_result[$i]['Co_singer'] == $result[$j]['Co_singer']) {
+                  $bool = true;
+                  break; 
+                }
+            }
+
+            if (!$bool) {
+                $result[] = $arr_result[$i];
+            }
+        }
+
+        return $result;
     }
 
     public function getAllAutoComplete($Nama,$TypeTelcoExport,$field,$postdata)
@@ -270,13 +312,71 @@ class M_master extends CI_Model {
 
         $where .= ' and b.'.ucfirst($field).' like "'.$Nama.'%"';
 
-        $sql = 'select b.'.ucfirst($field).' from proses_'.$TypeTelcoExport.' as a join
-                master_'.$TypeTelcoExport.' as b on a.Co_singer = b.Co_singer
-                '.$where.'
-                group by b.'.$field.'
-        ';
 
-        $query = $this->db->query($sql)->result_array();
-        return $query;
+        // new
+            $arrtbl = array();
+            $sqltbl = 'show tables like "%proses%"';
+            $querytbl = $this->db->query($sqltbl)->result_array();
+            foreach ($querytbl as $key => $value) {
+                foreach ($value as $keya) {
+                    if ($TypeTelcoExport == 'proa') {
+                        if (strpos($keya, $TypeTelcoExport) !== false) {
+                            $tblget = str_replace('proses_', '', $keya);
+                            $arrtbl[] = $tblget;
+                        }
+                    }
+                    else
+                    {
+                        if (strpos($keya, 'proa') === false) {
+                            $tblget = str_replace('proses_', '', $keya);
+                            $arrtbl[] = $tblget;
+                        }
+                    }
+                    
+                }
+            }
+
+            $arr_result = array();
+            for ($i=0; $i < count($arrtbl); $i++) { 
+                // $sql = 'select Co_singer,Co_title from '.$arrtbl[$i].'
+                //     where Co_singer like "'.$Nama.'%" or Co_title like "'.$Nama.'%"
+                //     group by Co_singer 
+                //     ';
+                $sql = 'select b.'.ucfirst($field).' from proses_'.$arrtbl[$i].' as a join
+                        master_'.$arrtbl[$i].' as b on a.Co_singer = b.Co_singer
+                        '.$where.'
+                        group by b.'.$field.'
+                ';    
+                    
+                $query = $this->db->query($sql)->result_array();
+                for ($j=0; $j < count($query); $j++) { 
+                    $arr_result[] = $query[$j];
+                }
+            }
+
+            $result = array();
+            for ($i=0; $i < count($arr_result); $i++) {
+                $bool = false; 
+                for ($j=0; $j < count($result); $j++) { 
+                    if ($arr_result[$i][ucfirst($field)] == $result[$j][ucfirst($field)]) {
+                      $bool = true;
+                      break; 
+                    }
+                }
+
+                if (!$bool) {
+                    $result[] = $arr_result[$i];
+                }
+            }
+
+
+        // $sql = 'select b.'.ucfirst($field).' from proses_'.$TypeTelcoExport.' as a join
+        //         master_'.$TypeTelcoExport.' as b on a.Co_singer = b.Co_singer
+        //         '.$where.'
+        //         group by b.'.$field.'
+        // ';
+
+        // $query = $this->db->query($sql)->result_array();
+        return $result;
     }
 }
