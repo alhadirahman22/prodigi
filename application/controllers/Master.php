@@ -86,11 +86,32 @@ class Master extends MY_Controller {
 	       $RoyalPencipta = trim($rowData[0][6]);
 
 	       // adding
-	       $MarketingChanel = trim($rowData[0][7]);
-	       $Pencipta = trim($rowData[0][8]);
-	       $Partner = trim($rowData[0][10]);
-	       $Artis = trim($rowData[0][9]);
-	       $NmChanel = trim($rowData[0][11]);
+	       $MarketingChanel = '';
+	       if (array_key_exists(7, $rowData[0])) {
+	       	$MarketingChanel = trim($rowData[0][7]);
+	       }
+
+	       $Pencipta = '';
+	       if (array_key_exists(8, $rowData[0])) {
+	       	$Pencipta = trim($rowData[0][8]);
+	       }
+	       
+	       $Partner = '';
+	       if (array_key_exists(10, $rowData[0])) {
+	       	$Partner = trim($rowData[0][10]);
+	       }
+
+	       $Artis = '';
+	       if (array_key_exists(9, $rowData[0])) {
+	       	$Artis = trim($rowData[0][9]);
+	       }
+
+	       $NmChanel = '';
+	       if (array_key_exists(11, $rowData[0])) {
+	       	$NmChanel = trim($rowData[0][11]);
+	       }
+	       
+	       
 	       $arr_chk = array(
 	        'RevenueProdigi' => $RevenueProdigi,
 	        'SharePartner' => $SharePartner,

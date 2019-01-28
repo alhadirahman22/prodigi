@@ -19,6 +19,7 @@
 								        <option value="xl">XL Prodigi</option>
 								        <option value="xl_proa">XL Proaktif</option>
 								        <option value="isat_proa">Isat Proaktif</option>
+								        <option value="3_proa">3 Proaktif</option>
 								    </select>
 								</div>    
 							</div>
@@ -154,6 +155,7 @@
 								        '<option value="xl">XL Prodigi</option>'+
 								        '<option value="xl_proa">XL Proaktif</option>'+
 								        '<option value="isat_proa">Isat Proaktif</option>'+
+								        '<option value="3_proa">3 Proaktif</option>'+
 								    '</select>'+
 							'</div>'
 							;	
