@@ -345,17 +345,7 @@ class Data extends MY_Controller {
 		$PriceRoyalPencipta = 0;
 		$PriceMarketingChanel =  0;
 		$postdata = $_POST;
-		// if ($Co_title == "" || $Co_title == null) {
-		//   $sql = 'select * from '.$table.' where Co_singer = ?';
-		//   $query = $this->db->query($sql,array($Co_singer))->result_array();
-		// } elseif ($Co_title != "" || $Co_title != null) {
-		//   $sql = 'select * from '.$table.' where Co_singer = ? and Co_title = ?';
-		//   $query = $this->db->query($sql,array($Co_singer,$Co_title))->result_array();
-		// } 
-		// else
-		// {
-		//   $query = array();
-		// }
+		
 		$where = '';
 		foreach ($postdata as $key => $value) {
 		    if ($value != '') {
@@ -377,162 +367,215 @@ class Data extends MY_Controller {
 		    }
 		}
 
-		$sql = 'select a.*,b.Pencipta,b.Partner,b.Artis,b.NmChanel from proses_'.$TypeTelcoExport.' as a join
-		        master_'.$TypeTelcoExport.' as b on a.Co_singer = b.Co_singer
-		        and a.Co_title = b.Co_title
-		        '.$where.'
-		        
-		';
+		// new
+		    $arrtbl = array();
+		    $sqltbl = 'show tables like "%proses%"';
+		    $querytbl = $this->db->query($sqltbl)->result_array();
+		    foreach ($querytbl as $key => $value) {
+		        foreach ($value as $keya) {
+		            if ($TypeTelcoExport == 'proa') {
+		                if (strpos($keya, $TypeTelcoExport) !== false) {
+		                    $tblget = str_replace('proses_', '', $keya);
+		                    $arrtbl[] = $tblget;
+		                }
+		            }
+		            else
+		            {
+		                if (strpos($keya, 'proa') === false) {
+		                    $tblget = str_replace('proses_', '', $keya);
+		                    $arrtbl[] = $tblget;
+		                }
+		            }
+		            
+		        }
+		    }
 
-		$query = $this->db->query($sql)->result_array();
+
+		    $arr_result = array();
+		    for ($i=0; $i < count($arrtbl); $i++) { 
+		        $sql = 'select a.*,b.Pencipta,b.Partner,b.Artis,b.NmChanel from proses_'.$arrtbl[$i].' as a join
+		                master_'.$arrtbl[$i].' as b on a.Co_singer = b.Co_singer
+		                and a.Co_title = b.Co_title
+		                '.$where.'
+		                
+		        ';    
+		            
+		        $query = $this->db->query($sql)->result_array();
+		        for ($j=0; $j < count($query); $j++) { 
+		            $arr_result[$arrtbl[$i]] = $query;
+		        }
+		    }
+
+		// $sql = 'select a.*,b.Pencipta,b.Partner,b.Artis,b.NmChanel from proses_'.$TypeTelcoExport.' as a join
+		//         master_'.$TypeTelcoExport.' as b on a.Co_singer = b.Co_singer
+		//         and a.Co_title = b.Co_title
+		//         '.$where.'
+		        
+		// ';
+
+		// $query = $this->db->query($sql)->result_array();
 		
 		$keyM = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
-		// if (count($query) > 0) {
-		  for ($i=0; $i < count($query); $i++) { 
-		    $Detail = $query[$i]['Detail'];
-		    $Detail = json_decode($Detail);
-		    
-		    $PriceSharePartner = $PriceSharePartner + $Detail->PriceSharePartner;
-		    $PriceShareProdigi = $PriceShareProdigi + $Detail->PriceShareProdigi;
-		    $PriceRoyaltiArtis = $PriceRoyaltiArtis + $Detail->PriceRoyaltiArtis;
-		    $PriceRoyalPencipta = $PriceRoyalPencipta + $Detail->PriceRoyalPencipta;
-		    $PriceMarketingChanel =  $PriceMarketingChanel + $Detail->PriceMarketingChanel;
-		  }
-		  
-		  // get two comma
-		  	 $PriceSharePartner = number_format((float)$PriceSharePartner, 2, '.', '');
-		  	 $PriceShareProdigi = number_format((float)$PriceShareProdigi, 2, '.', '');
-		  	 $PriceRoyaltiArtis = number_format((float)$PriceRoyaltiArtis, 2, '.', '');
-		  	 $PriceRoyalPencipta = number_format((float)$PriceRoyalPencipta, 2, '.', '');
-		  	 $PriceMarketingChanel = number_format((float)$PriceMarketingChanel, 2, '.', '');
+		foreach ($arr_result as $key => $value) {
+			for ($i=0; $i < count($value); $i++) { 
+				$Detail = $value[$i]['Detail'];
+				$Detail = json_decode($Detail);
+				
+				$PriceSharePartner = $PriceSharePartner + $Detail->PriceSharePartner;
+				$PriceShareProdigi = $PriceShareProdigi + $Detail->PriceShareProdigi;
+				$PriceRoyaltiArtis = $PriceRoyaltiArtis + $Detail->PriceRoyaltiArtis;
+				$PriceRoyalPencipta = $PriceRoyalPencipta + $Detail->PriceRoyalPencipta;
+				$PriceMarketingChanel =  $PriceMarketingChanel + $Detail->PriceMarketingChanel;
+			}
+		}
 
-		  $excel3->setCellValue('F12', $Co_singer);
-		  $excel3->setCellValue('F13', $Co_title); 
-		  $excel3->setCellValue('F14', $Partner); 
-		  $excel3->setCellValue('F15', $Pencipta); 
-		  $excel3->setCellValue('F16', $NmChanel); 
-		  
-		  $excel3->setCellValue('I18', $PriceSharePartner); 
-		  //$excel3->setCellValue('I16', $PriceShareProdigi); 
-		  $excel3->setCellValue('I19', $PriceRoyaltiArtis); 
-		  $excel3->setCellValue('I20', $PriceRoyalPencipta); 
-		  $excel3->setCellValue('I21', $PriceMarketingChanel); 
+		// get two comma
+			 $PriceSharePartner = number_format((float)$PriceSharePartner, 2, '.', '');
+			 $PriceShareProdigi = number_format((float)$PriceShareProdigi, 2, '.', '');
+			 $PriceRoyaltiArtis = number_format((float)$PriceRoyaltiArtis, 2, '.', '');
+			 $PriceRoyalPencipta = number_format((float)$PriceRoyalPencipta, 2, '.', '');
+			 $PriceMarketingChanel = number_format((float)$PriceMarketingChanel, 2, '.', '');
 
-		  $objWriter = PHPExcel_IOFactory::createWriter($excel2, 'Excel2007');
+			 $excel3->setCellValue('F12', $Co_singer);
+			 $excel3->setCellValue('F13', $Co_title); 
+			 $excel3->setCellValue('F14', $Partner); 
+			 $excel3->setCellValue('F15', $Pencipta); 
+			 $excel3->setCellValue('F16', $NmChanel); 
+			 
+			 $excel3->setCellValue('I18', $PriceSharePartner); 
+			 //$excel3->setCellValue('I16', $PriceShareProdigi); 
+			 $excel3->setCellValue('I19', $PriceRoyaltiArtis); 
+			 $excel3->setCellValue('I20', $PriceRoyalPencipta); 
+			 $excel3->setCellValue('I21', $PriceMarketingChanel); 
 
-		  // another sheet
-		  $excel2->setActiveSheetIndex(1);
-		  $excel4 = $excel2->getActiveSheet();
-		  $a = 2;
-		  $h = 1;
-		  $arr_show_header = array();
-		  for ($i=0; $i < count($query); $i++) { 
-		  	$Detail = $query[$i]['Detail'];
-		  	$Detail = json_decode($Detail);
-		  	$Friend= json_decode($query[$i]['Friend'], True);
-		  	$Friend= (array)$Friend;
+			 $objWriter = PHPExcel_IOFactory::createWriter($excel2, 'Excel2007');
 
-		  	// check price another
-			  	for ($j=$i; $j < count($query); $j++) { 
-			  		$Co_singer1 = $query[$i]['Co_singer'];
-			  		$Co_title1 = $query[$i]['Co_title'];
+		$incsheet = 1;
+		$var_excel4 = 4;
+		$var_excel = 'excel';
+		foreach ($arr_result as $key => $value) {
+			$excel2->setActiveSheetIndex($incsheet);
+			$exc = $var_excel.$var_excel4;
+			$$exc = $excel2->getActiveSheet()->setTitle($key);
 
-			  		$Co_singer2 = $query[$j]['Co_singer'];
-			  		$Co_title2 = $query[$j]['Co_title'];
+			$a = 2;
+			$h = 1;
+			$arr_show_header = array();
+			$query = $value;
+			
+			for ($i=0; $i < count($query); $i++) { 
+			  	$Detail = $query[$i]['Detail'];
+			  	$Detail = json_decode($Detail);
+			  	$Friend= json_decode($query[$i]['Friend'], True);
+			  	$Friend= (array)$Friend;
 
-			  		if ($Co_singer1 == $Co_singer2 && $Co_title1 == $Co_title2) {
-			  			$Detail2 = $query[$j]['Detail'];
-			  			$Detail2 = json_decode($Detail2);
-			  			$PriceSharePartner =$Detail2->PriceSharePartner;
-			  			$PriceRoyaltiArtis = $Detail2->PriceRoyaltiArtis;
-			  			$PriceRoyalPencipta = $Detail2->PriceRoyalPencipta;
-			  			$PriceMarketingChanel =$Detail2->PriceMarketingChanel;
+			  	// check price another
+				  	for ($j=$i; $j < count($query); $j++) { 
+				  		$Co_singer1 = $query[$i]['Co_singer'];
+				  		$Co_title1 = $query[$i]['Co_title'];
 
-			  			if ($PriceSharePartner > 0) {
-			  				$arr_show_header['PriceSharePartner'] = 'SharePartner';
-			  			}
+				  		$Co_singer2 = $query[$j]['Co_singer'];
+				  		$Co_title2 = $query[$j]['Co_title'];
 
-			  			if ($PriceRoyaltiArtis > 0) {
-			  				$arr_show_header['PriceRoyaltiArtis'] = 'RoyaltiArtis';
-			  			}
+				  		if ($Co_singer1 == $Co_singer2 && $Co_title1 == $Co_title2) {
+				  			$Detail2 = $query[$j]['Detail'];
+				  			$Detail2 = json_decode($Detail2);
+				  			$PriceSharePartner =$Detail2->PriceSharePartner;
+				  			$PriceRoyaltiArtis = $Detail2->PriceRoyaltiArtis;
+				  			$PriceRoyalPencipta = $Detail2->PriceRoyalPencipta;
+				  			$PriceMarketingChanel =$Detail2->PriceMarketingChanel;
 
-			  			if ($PriceRoyalPencipta > 0) {
-			  				$arr_show_header['PriceRoyalPencipta'] = 'RoyalPencipta';
-			  			}
+				  			if ($PriceSharePartner > 0) {
+				  				$arr_show_header['PriceSharePartner'] = 'SharePartner';
+				  			}
 
-			  			if ($PriceMarketingChanel > 0) {
-			  				$arr_show_header['PriceMarketingChanel'] = 'MarketingChanel';
-			  			}
-			  		}
-			  		else
-			  		{
-			  			break;
-			  		}
-			  	}
+				  			if ($PriceRoyaltiArtis > 0) {
+				  				$arr_show_header['PriceRoyaltiArtis'] = 'RoyaltiArtis';
+				  			}
 
-			  	if (count($arr_show_header) > 0) {
-			  		$z = 10;
-			  		foreach ($arr_show_header as $key => $value) {
-			  			$excel4->setCellValue($keyM[$z].$h, $value);
-			  			$excel4->getStyle($keyM[$z].$h)->applyFromArray($style_col);
-			  			$z++; 
-			  		}
-			  	}
+				  			if ($PriceRoyalPencipta > 0) {
+				  				$arr_show_header['PriceRoyalPencipta'] = 'RoyalPencipta';
+				  			}
 
-			 for ($x=0; $x < count($Friend); $x++) {
-			 	 $no = $x + 1;
-			 	 $F_Detail =  json_decode($Friend[$x]['Detail']);
- 			  	 $excel4->setCellValue('A'.$a, $no); 
- 			  	 $excel4->setCellValue('B'.$a, $query[$i]['Co_singer']); 
- 			  	 $excel4->setCellValue('C'.$a, $query[$i]['Co_title']); 
- 			  	 $excel4->setCellValue('D'.$a, $F_Detail->TotalTrafic); 
- 			  	 $excel4->setCellValue('E'.$a, $F_Detail->TotalRevenue);
- 			  	 $excel4->setCellValue('F'.$a, $query[$i]['Pencipta']); 
- 			  	 $excel4->setCellValue('G'.$a, $query[$i]['Partner']); 
- 			  	 $excel4->setCellValue('H'.$a, $query[$i]['Artis']); 
- 			  	 $excel4->setCellValue('I'.$a, $query[$i]['NmChanel']);
- 			  	 
- 			  	 $PriceSharePartner = $F_Detail->PriceSharePartner;
- 			  	 $PriceShareProdigi =$F_Detail->PriceShareProdigi;
- 			  	 $PriceRoyaltiArtis = $F_Detail->PriceRoyaltiArtis;
- 			  	 $PriceRoyalPencipta = $F_Detail->PriceRoyalPencipta;
- 			  	 $PriceMarketingChanel =  $F_Detail->PriceMarketingChanel;
- 			  	 $PriceRevenueProdigi =  $F_Detail->PriceRevenueProdigi;
+				  			if ($PriceMarketingChanel > 0) {
+				  				$arr_show_header['PriceMarketingChanel'] = 'MarketingChanel';
+				  			}
+				  		}
+				  		else
+				  		{
+				  			break;
+				  		}
+				  	}
 
- 			  	 $excel4->setCellValue('J'.$a, number_format((float)$PriceRevenueProdigi, 2, '.', '')); 
- 			  	 //$excel4->setCellValue('I'.$a, number_format((float)$PriceShareProdigi, 2, '.', '')); 
- 			  	 // $excel4->setCellValue('J'.$a, number_format((float)$PriceSharePartner, 2, '.', '')); 
- 			  	 // $excel4->setCellValue('K'.$a, number_format((float)$PriceRoyaltiArtis, 2, '.', '')); 
- 			  	 // $excel4->setCellValue('L'.$a, number_format((float)$PriceRoyalPencipta, 2, '.', '')); 
- 			  	 // $excel4->setCellValue('M'.$a, number_format((float)$PriceMarketingChanel, 2, '.', ''));
+				  	if (count($arr_show_header) > 0) {
+				  		$z = 10;
+				  		foreach ($arr_show_header as $key2 => $value2) {
+				  			$$exc->setCellValue($keyM[$z].$h, $value2);
+				  			$$exc->getStyle($keyM[$z].$h)->applyFromArray($style_col);
+				  			$z++; 
+				  		}
+				  	}
 
- 			  	 if (count($arr_show_header) > 0) {
- 			  	 	$z = 10;
- 			  	 	foreach ($arr_show_header as $key => $value) {
- 			  	 		$get =json_decode($Friend[$x]['Detail'], True);
- 			  	 		$get =(array)$get;
- 			  	 		$excel4->setCellValue($keyM[$z].$a, number_format((float)$get[$key], 2, '.', ''));
- 			  	 		$excel4->getStyle($keyM[$z].$a)->applyFromArray($style_row); 
- 			  	 		$z++; 
- 			  	 	}
- 			  	 }
+				for ($x=0; $x < count($Friend); $x++) {
+				 	 $no = $x + 1;
+				 	 $F_Detail =  json_decode($Friend[$x]['Detail']);
+	 			  	 $$exc->setCellValue('A'.$a, $no); 
+	 			  	 $$exc->setCellValue('B'.$a, $query[$i]['Co_singer']); 
+	 			  	 $$exc->setCellValue('C'.$a, $query[$i]['Co_title']); 
+	 			  	 $$exc->setCellValue('D'.$a, $F_Detail->TotalTrafic); 
+	 			  	 $$exc->setCellValue('E'.$a, $F_Detail->TotalRevenue);
+	 			  	 $$exc->setCellValue('F'.$a, $query[$i]['Pencipta']); 
+	 			  	 $$exc->setCellValue('G'.$a, $query[$i]['Partner']); 
+	 			  	 $$exc->setCellValue('H'.$a, $query[$i]['Artis']); 
+	 			  	 $$exc->setCellValue('I'.$a, $query[$i]['NmChanel']);
+	 			  	 
+	 			  	 $PriceSharePartner = $F_Detail->PriceSharePartner;
+	 			  	 $PriceShareProdigi =$F_Detail->PriceShareProdigi;
+	 			  	 $PriceRoyaltiArtis = $F_Detail->PriceRoyaltiArtis;
+	 			  	 $PriceRoyalPencipta = $F_Detail->PriceRoyalPencipta;
+	 			  	 $PriceMarketingChanel =  $F_Detail->PriceMarketingChanel;
+	 			  	 $PriceRevenueProdigi =  $F_Detail->PriceRevenueProdigi;
 
- 			  	 $excel4->getStyle('A'.$a)->applyFromArray($style_row);
- 	             $excel4->getStyle('B'.$a)->applyFromArray($style_row);
- 	             $excel4->getStyle('C'.$a)->applyFromArray($style_row);
- 	             $excel4->getStyle('D'.$a)->applyFromArray($style_row);
- 	             $excel4->getStyle('E'.$a)->applyFromArray($style_row);
- 	             $excel4->getStyle('F'.$a)->applyFromArray($style_row);
- 	             $excel4->getStyle('G'.$a)->applyFromArray($style_row);
- 	             $excel4->getStyle('H'.$a)->applyFromArray($style_row);
- 	             $excel4->getStyle('I'.$a)->applyFromArray($style_row);
- 	             $excel4->getStyle('J'.$a)->applyFromArray($style_row);
- 	             // $excel4->getStyle('K'.$a)->applyFromArray($style_row);
- 	             // $excel4->getStyle('L'.$a)->applyFromArray($style_row);
- 	             // $excel4->getStyle('M'.$a)->applyFromArray($style_row);
- 	             $a = $a + 1;  
-			}	
-		  }
+	 			  	 $$exc->setCellValue('J'.$a, number_format((float)$PriceRevenueProdigi, 2, '.', '')); 
+	 			  	 //$excel4->setCellValue('I'.$a, number_format((float)$PriceShareProdigi, 2, '.', '')); 
+	 			  	 // $excel4->setCellValue('J'.$a, number_format((float)$PriceSharePartner, 2, '.', '')); 
+	 			  	 // $excel4->setCellValue('K'.$a, number_format((float)$PriceRoyaltiArtis, 2, '.', '')); 
+	 			  	 // $excel4->setCellValue('L'.$a, number_format((float)$PriceRoyalPencipta, 2, '.', '')); 
+	 			  	 // $excel4->setCellValue('M'.$a, number_format((float)$PriceMarketingChanel, 2, '.', ''));
+
+	 			  	 if (count($arr_show_header) > 0) {
+	 			  	 	$z = 10;
+	 			  	 	foreach ($arr_show_header as $key3 => $value3) {
+	 			  	 		$get =json_decode($Friend[$x]['Detail'], True);
+	 			  	 		$get =(array)$get;
+	 			  	 		$$exc->setCellValue($keyM[$z].$a, number_format((float)$get[$key3], 2, '.', ''));
+	 			  	 		$$exc->getStyle($keyM[$z].$a)->applyFromArray($style_row); 
+	 			  	 		$z++; 
+	 			  	 	}
+	 			  	 }
+
+	 			  	 $$exc->getStyle('A'.$a)->applyFromArray($style_row);
+	 	             $$exc->getStyle('B'.$a)->applyFromArray($style_row);
+	 	             $$exc->getStyle('C'.$a)->applyFromArray($style_row);
+	 	             $$exc->getStyle('D'.$a)->applyFromArray($style_row);
+	 	             $$exc->getStyle('E'.$a)->applyFromArray($style_row);
+	 	             $$exc->getStyle('F'.$a)->applyFromArray($style_row);
+	 	             $$exc->getStyle('G'.$a)->applyFromArray($style_row);
+	 	             $$exc->getStyle('H'.$a)->applyFromArray($style_row);
+	 	             $$exc->getStyle('I'.$a)->applyFromArray($style_row);
+	 	             $$exc->getStyle('J'.$a)->applyFromArray($style_row);
+	 	             // $excel4->getStyle('K'.$a)->applyFromArray($style_row);
+	 	             // $excel4->getStyle('L'.$a)->applyFromArray($style_row);
+	 	             // $excel4->getStyle('M'.$a)->applyFromArray($style_row);
+	 	             $a = $a + 1;  
+				}	
+			}
+
+			$incsheet++;
+			$var_excel4++;
+			// break;
+
+		}	 
 
 		  foreach(range('A','Z') as $columnID) {
               $excel2->getActiveSheet()->getColumnDimension($columnID)
