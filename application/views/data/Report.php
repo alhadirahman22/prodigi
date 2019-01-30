@@ -81,17 +81,32 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#Excel").click(function(){
-			if ($('input[name="co_sing"]').val() == "" && $('input[name="Partner"]').val() == "") {toastr.error('Singer or Partner Required','!Failed');return;}
-			var url = base_url_js+'datadata/excel';
-			FormSubmitAuto(url, 'POST', [
-			    { name: 'co_sing', value: $('input[name="co_sing"]').val() },
-			    { name: 'co_title', value: $('input[name="co_title"]').val() },
-			    { name: 'Pencipta', value: $('input[name="Pencipta"]').val() },
-			    { name: 'Partner', value: $('input[name="Partner"]').val() },
-			    { name: 'Artis', value: $('input[name="Artis"]').val() },
-			    { name: 'NmChanel', value: $('input[name="NmChanel"]').val() },
-			    { name: 'TypeTelcoExport', value: $("#TypeTelcoData").val() },
-			]);
+			// if ($('input[name="co_sing"]').val() == "" && $('input[name="Partner"]').val() == "") {toastr.error('Singer or Partner Required','!Failed');return;}
+			var bool = 0;
+			$("input").each(function(){
+				var v = $(this).val();
+				if (v != '') {
+					bool++;
+				}
+			})
+
+			if (bool > 0) {
+				var url = base_url_js+'datadata/excel';
+				FormSubmitAuto(url, 'POST', [
+				    { name: 'co_sing', value: $('input[name="co_sing"]').val() },
+				    { name: 'co_title', value: $('input[name="co_title"]').val() },
+				    { name: 'Pencipta', value: $('input[name="Pencipta"]').val() },
+				    { name: 'Partner', value: $('input[name="Partner"]').val() },
+				    { name: 'Artis', value: $('input[name="Artis"]').val() },
+				    { name: 'NmChanel', value: $('input[name="NmChanel"]').val() },
+				    { name: 'TypeTelcoExport', value: $("#TypeTelcoData").val() },
+				]);
+			}
+			else
+			{
+				toastr.error('Please fill some text','!Failed');
+			}
+			
 		})
 		
 		Autocomplete('input[name="co_sing"]');

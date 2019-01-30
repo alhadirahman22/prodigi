@@ -79,7 +79,16 @@ class Data extends MY_Controller {
 		    $temp = array();
 		    $co_sing = trim($rowData[0][7]);
 		    $Price = $rowData[0][4];
+		    $PriceSave = $rowData[0][3];
 		    $contentTitle = trim($rowData[0][6]);
+
+		    // add another field
+		    	$SONG_ID = trim($rowData[0][0]);
+		    	$CONTENT_ID = trim($rowData[0][1]);
+		    	$VAS_CODE = trim($rowData[0][5]); 
+		    	$CP_NAME = trim($rowData[0][8]); 
+		    	$SUBSTYPE = trim($rowData[0][9]); 
+		    	$TRX = trim($rowData[0][10]); 
 		    // add friend
 		    $F_data = array();
 		    $F_getResult = $this->m_master->getResult($Price,$co_sing,$contentTitle,$TypeTelcoData);
@@ -88,6 +97,13 @@ class Data extends MY_Controller {
 		    	$TotalTrafic = $rowData[0][2];
 		    	$F_getResult['TotalRevenue'] = $TotalRevenue;
 		    	$F_getResult['TotalTrafic'] = $TotalTrafic;
+		    	$F_getResult['SONG_ID'] = $SONG_ID;
+		    	$F_getResult['CONTENT_ID'] = $CONTENT_ID;
+		    	$F_getResult['VAS_CODE'] = $VAS_CODE;
+		    	$F_getResult['CP_NAME'] = $CP_NAME;
+		    	$F_getResult['SUBSTYPE'] = $SUBSTYPE;
+		    	$F_getResult['TRX'] = $TRX;
+		    	$F_getResult['PriceSave'] = $PriceSave;
 		    $temp = array(
 		     'Co_singer' => $co_sing,
 		     'Co_title' => $contentTitle,
@@ -105,8 +121,24 @@ class Data extends MY_Controller {
 		       	 $F_getResult = $this->m_master->getResult($F_Price,$co_sing,$contentTitle,$TypeTelcoData);
 		       	 $TotalRevenue = $rowDataSearch[0][4];
 		       	 $TotalTrafic = $rowDataSearch[0][2];
+		       	 $PriceSave = $rowDataSearch[0][3];
+		       	 	// add another field
+		       	 		$SONG_ID = trim($rowDataSearch[0][0]);
+		       	 		$CONTENT_ID = trim($rowDataSearch[0][1]);
+		       	 		$VAS_CODE = trim($rowDataSearch[0][5]); 
+		       	 		$CP_NAME = trim($rowDataSearch[0][8]); 
+		       	 		$SUBSTYPE = trim($rowDataSearch[0][9]); 
+		       	 		$TRX = trim($rowDataSearch[0][10]); 
+
 		       	 $F_getResult['TotalRevenue'] = $TotalRevenue;
 		       	 $F_getResult['TotalTrafic'] = $TotalTrafic;
+		       	 $F_getResult['SONG_ID'] = $SONG_ID;
+		       	 $F_getResult['CONTENT_ID'] = $CONTENT_ID;
+		       	 $F_getResult['VAS_CODE'] = $VAS_CODE;
+		       	 $F_getResult['CP_NAME'] = $CP_NAME;
+		       	 $F_getResult['SUBSTYPE'] = $SUBSTYPE;
+		       	 $F_getResult['TRX'] = $TRX;
+		       	 $F_getResult['PriceSave'] = $PriceSave;
 		       	 $temp = array(
 		       	  'Co_singer' => $co_sing,
 		       	  'Co_title' => $contentTitle,
@@ -296,6 +328,7 @@ class Data extends MY_Controller {
 
 	public function datadata_excel()
 	{
+		ini_set('max_execution_time', 300); //300 seconds = 5 minutes
 		$TypeTelcoExport =  $this->input->post('TypeTelcoExport');
 		$table = 'proses_'.$TypeTelcoExport;
 		include APPPATH.'third_party/PHPExcel/PHPExcel.php';
@@ -414,20 +447,82 @@ class Data extends MY_Controller {
 		// ';
 
 		// $query = $this->db->query($sql)->result_array();
-		
+
+		// $excel2->setActiveSheetIndex(0);
+		// $excel3 = $excel2->getActiveSheet();
 		$keyM = array('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z');
+		$arr_per_key = array();
 		foreach ($arr_result as $key => $value) {
 			for ($i=0; $i < count($value); $i++) { 
 				$Detail = $value[$i]['Detail'];
 				$Detail = json_decode($Detail);
+
+				if (array_key_exists($key, $arr_per_key)) {
+					$dd = $arr_per_key[$key];
+					if (array_key_exists('PriceSharePartner', $dd)) {
+						$arr_per_key[$key]['PriceSharePartner'] = $dd['PriceSharePartner'] + $Detail->PriceSharePartner;
+					}
+					else
+					{
+						$arr_per_key[$key]['PriceSharePartner'] = $Detail->PriceSharePartner;
+					}
+
+					if (array_key_exists('PriceShareProdigi', $dd)) {
+						$arr_per_key[$key]['PriceShareProdigi'] = $dd['PriceShareProdigi'] + $Detail->PriceShareProdigi;
+					}
+					else
+					{
+						$arr_per_key[$key]['PriceShareProdigi'] = $Detail->PriceShareProdigi;
+					}
+
+					if (array_key_exists('PriceRoyaltiArtis', $dd)) {
+						$arr_per_key[$key]['PriceRoyaltiArtis'] = $dd['PriceRoyaltiArtis'] + $Detail->PriceRoyaltiArtis;
+					}
+					else
+					{
+						$arr_per_key[$key]['PriceRoyaltiArtis'] = $Detail->PriceRoyaltiArtis;
+					}
+
+					if (array_key_exists('PriceRoyalPencipta', $dd)) {
+						$arr_per_key[$key]['PriceRoyalPencipta'] = $dd['PriceRoyalPencipta'] + $Detail->PriceRoyalPencipta;
+					}
+					else
+					{
+						$arr_per_key[$key]['PriceRoyalPencipta'] = $Detail->PriceRoyalPencipta;
+					}
+
+					if (array_key_exists('PriceMarketingChanel', $dd)) {
+						$arr_per_key[$key]['PriceMarketingChanel'] = $dd['PriceMarketingChanel'] + $Detail->PriceMarketingChanel;
+					}
+					else
+					{
+						$arr_per_key[$key]['PriceMarketingChanel'] = $Detail->PriceMarketingChanel;
+					}
+
+
+				}
+				else
+				{
+					$arr_per_key[$key]= array(
+							'PriceSharePartner' => $Detail->PriceSharePartner,
+							'PriceShareProdigi' => $Detail->PriceShareProdigi,
+							'PriceRoyaltiArtis' => $Detail->PriceRoyaltiArtis,
+							'PriceRoyalPencipta' => $Detail->PriceRoyalPencipta,
+							'PriceMarketingChanel' => $Detail->PriceMarketingChanel,
+					);
+				}
 				
 				$PriceSharePartner = $PriceSharePartner + $Detail->PriceSharePartner;
 				$PriceShareProdigi = $PriceShareProdigi + $Detail->PriceShareProdigi;
 				$PriceRoyaltiArtis = $PriceRoyaltiArtis + $Detail->PriceRoyaltiArtis;
 				$PriceRoyalPencipta = $PriceRoyalPencipta + $Detail->PriceRoyalPencipta;
 				$PriceMarketingChanel =  $PriceMarketingChanel + $Detail->PriceMarketingChanel;
+
 			}
 		}
+
+
+		// Artis
 
 		// get two comma
 			 $PriceSharePartner = number_format((float)$PriceSharePartner, 2, '.', '');
@@ -442,17 +537,55 @@ class Data extends MY_Controller {
 			 $excel3->setCellValue('F15', $Pencipta); 
 			 $excel3->setCellValue('F16', $NmChanel); 
 			 
-			 $excel3->setCellValue('I18', $PriceSharePartner); 
-			 //$excel3->setCellValue('I16', $PriceShareProdigi); 
-			 $excel3->setCellValue('I19', $PriceRoyaltiArtis); 
-			 $excel3->setCellValue('I20', $PriceRoyalPencipta); 
-			 $excel3->setCellValue('I21', $PriceMarketingChanel); 
+			 // Set Per Telco
+			 $RowNum = 18;
+			 foreach ($arr_per_key as $key => $value) {
+			 	$excel3->setCellValue('G'.$RowNum, $key); 
+			 	$excel3->setCellValue('I'.$RowNum, $value['PriceRoyaltiArtis']);
+			 	$RowNum++; 
+			 }
 
-			 $objWriter = PHPExcel_IOFactory::createWriter($excel2, 'Excel2007');
+			$excel3->setCellValue('I23', $PriceRoyaltiArtis); 
+			 	
 
-		$incsheet = 1;
+			 // $excel3->setCellValue('I18', $PriceSharePartner); 
+			 // //$excel3->setCellValue('I16', $PriceShareProdigi); 
+			 // $excel3->setCellValue('I19', $PriceRoyaltiArtis); 
+			 // $excel3->setCellValue('I20', $PriceRoyalPencipta); 
+			 // $excel3->setCellValue('I21', $PriceMarketingChanel); 
+
+		// Pencipta	 
+			$excel2->setActiveSheetIndex(1);
+			$excel3 = $excel2->getActiveSheet();
+
+			$RowNum = 18;
+			foreach ($arr_per_key as $key => $value) {
+				$excel3->setCellValue('G'.$RowNum, $key); 
+				$excel3->setCellValue('I'.$RowNum, $value['PriceRoyalPencipta']);
+				$RowNum++; 
+			}
+
+			$excel3->setCellValue('I23', $PriceRoyalPencipta); 
+
+			// Partner	 
+			$excel2->setActiveSheetIndex(2);
+			$excel3 = $excel2->getActiveSheet();
+
+			$RowNum = 18;
+			foreach ($arr_per_key as $key => $value) {
+				$excel3->setCellValue('G'.$RowNum, $key); 
+				$excel3->setCellValue('I'.$RowNum, $value['PriceSharePartner']);
+				$RowNum++; 
+			}
+
+			$excel3->setCellValue('I23', $PriceSharePartner);
+
+			$objWriter = PHPExcel_IOFactory::createWriter($excel2, 'Excel2007');
+
+		$incsheet = 3;
 		$var_excel4 = 4;
 		$var_excel = 'excel';
+		$number = 1;
 		foreach ($arr_result as $key => $value) {
 			$excel2->setActiveSheetIndex($incsheet);
 			$exc = $var_excel.$var_excel4;
@@ -508,7 +641,7 @@ class Data extends MY_Controller {
 				  	}
 
 				  	if (count($arr_show_header) > 0) {
-				  		$z = 10;
+				  		$z = 16;
 				  		foreach ($arr_show_header as $key2 => $value2) {
 				  			$$exc->setCellValue($keyM[$z].$h, $value2);
 				  			$$exc->getStyle($keyM[$z].$h)->applyFromArray($style_col);
@@ -517,17 +650,24 @@ class Data extends MY_Controller {
 				  	}
 
 				for ($x=0; $x < count($Friend); $x++) {
-				 	 $no = $x + 1;
+				 	 $no = $number;
 				 	 $F_Detail =  json_decode($Friend[$x]['Detail']);
 	 			  	 $$exc->setCellValue('A'.$a, $no); 
-	 			  	 $$exc->setCellValue('B'.$a, $query[$i]['Co_singer']); 
-	 			  	 $$exc->setCellValue('C'.$a, $query[$i]['Co_title']); 
-	 			  	 $$exc->setCellValue('D'.$a, $F_Detail->TotalTrafic); 
-	 			  	 $$exc->setCellValue('E'.$a, $F_Detail->TotalRevenue);
-	 			  	 $$exc->setCellValue('F'.$a, $query[$i]['Pencipta']); 
-	 			  	 $$exc->setCellValue('G'.$a, $query[$i]['Partner']); 
-	 			  	 $$exc->setCellValue('H'.$a, $query[$i]['Artis']); 
-	 			  	 $$exc->setCellValue('I'.$a, $query[$i]['NmChanel']);
+	 			  	 $$exc->setCellValue('B'.$a, $F_Detail->SONG_ID);
+	 			  	 $$exc->setCellValue('C'.$a, $F_Detail->CONTENT_ID);
+	 			  	 $$exc->setCellValue('D'.$a, $F_Detail->VAS_CODE);
+	 			  	 $$exc->setCellValue('E'.$a, $F_Detail->CP_NAME);
+	 			  	 $$exc->setCellValue('F'.$a, $F_Detail->PriceSave);
+	 			  	 $$exc->setCellValue('G'.$a, $F_Detail->TRX);
+
+	 			  	 $$exc->setCellValue('H'.$a, $query[$i]['Co_singer']); 
+	 			  	 $$exc->setCellValue('I'.$a, $query[$i]['Co_title']); 
+	 			  	 $$exc->setCellValue('J'.$a, $F_Detail->TotalTrafic); 
+	 			  	 $$exc->setCellValue('K'.$a, $F_Detail->TotalRevenue);
+	 			  	 $$exc->setCellValue('L'.$a, $query[$i]['Pencipta']); 
+	 			  	 $$exc->setCellValue('M'.$a, $query[$i]['Partner']); 
+	 			  	 $$exc->setCellValue('N'.$a, $query[$i]['Artis']); 
+	 			  	 $$exc->setCellValue('O'.$a, $query[$i]['NmChanel']);
 	 			  	 
 	 			  	 $PriceSharePartner = $F_Detail->PriceSharePartner;
 	 			  	 $PriceShareProdigi =$F_Detail->PriceShareProdigi;
@@ -536,7 +676,7 @@ class Data extends MY_Controller {
 	 			  	 $PriceMarketingChanel =  $F_Detail->PriceMarketingChanel;
 	 			  	 $PriceRevenueProdigi =  $F_Detail->PriceRevenueProdigi;
 
-	 			  	 $$exc->setCellValue('J'.$a, number_format((float)$PriceRevenueProdigi, 2, '.', '')); 
+	 			  	 $$exc->setCellValue('P'.$a, number_format((float)$PriceRevenueProdigi, 2, '.', '')); 
 	 			  	 //$excel4->setCellValue('I'.$a, number_format((float)$PriceShareProdigi, 2, '.', '')); 
 	 			  	 // $excel4->setCellValue('J'.$a, number_format((float)$PriceSharePartner, 2, '.', '')); 
 	 			  	 // $excel4->setCellValue('K'.$a, number_format((float)$PriceRoyaltiArtis, 2, '.', '')); 
@@ -544,7 +684,7 @@ class Data extends MY_Controller {
 	 			  	 // $excel4->setCellValue('M'.$a, number_format((float)$PriceMarketingChanel, 2, '.', ''));
 
 	 			  	 if (count($arr_show_header) > 0) {
-	 			  	 	$z = 10;
+	 			  	 	$z = 16;
 	 			  	 	foreach ($arr_show_header as $key3 => $value3) {
 	 			  	 		$get =json_decode($Friend[$x]['Detail'], True);
 	 			  	 		$get =(array)$get;
@@ -564,10 +704,17 @@ class Data extends MY_Controller {
 	 	             $$exc->getStyle('H'.$a)->applyFromArray($style_row);
 	 	             $$exc->getStyle('I'.$a)->applyFromArray($style_row);
 	 	             $$exc->getStyle('J'.$a)->applyFromArray($style_row);
+	 	             $$exc->getStyle('K'.$a)->applyFromArray($style_row);
+	 	             $$exc->getStyle('L'.$a)->applyFromArray($style_row);
+	 	             $$exc->getStyle('M'.$a)->applyFromArray($style_row);
+	 	             $$exc->getStyle('N'.$a)->applyFromArray($style_row);
+	 	             $$exc->getStyle('O'.$a)->applyFromArray($style_row);
+	 	             $$exc->getStyle('P'.$a)->applyFromArray($style_row);
 	 	             // $excel4->getStyle('K'.$a)->applyFromArray($style_row);
 	 	             // $excel4->getStyle('L'.$a)->applyFromArray($style_row);
 	 	             // $excel4->getStyle('M'.$a)->applyFromArray($style_row);
-	 	             $a = $a + 1;  
+	 	             $a = $a + 1; 
+	 	             $number++; 
 				}	
 			}
 
