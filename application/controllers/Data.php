@@ -522,15 +522,14 @@ class Data extends MY_Controller {
 		}
 
 
-		// Artis
-
 		// get two comma
 			 $PriceSharePartner = number_format((float)$PriceSharePartner, 2, '.', '');
 			 $PriceShareProdigi = number_format((float)$PriceShareProdigi, 2, '.', '');
 			 $PriceRoyaltiArtis = number_format((float)$PriceRoyaltiArtis, 2, '.', '');
 			 $PriceRoyalPencipta = number_format((float)$PriceRoyalPencipta, 2, '.', '');
 			 $PriceMarketingChanel = number_format((float)$PriceMarketingChanel, 2, '.', '');
-
+		
+		// Artis
 			 $excel3->setCellValue('F12', $Co_singer);
 			 $excel3->setCellValue('F13', $Co_title); 
 			 $excel3->setCellValue('F14', $Partner); 
@@ -558,6 +557,12 @@ class Data extends MY_Controller {
 			$excel2->setActiveSheetIndex(1);
 			$excel3 = $excel2->getActiveSheet();
 
+			$excel3->setCellValue('F12', $Co_singer);
+			$excel3->setCellValue('F13', $Co_title); 
+			$excel3->setCellValue('F14', $Partner); 
+			$excel3->setCellValue('F15', $Pencipta); 
+			$excel3->setCellValue('F16', $NmChanel);
+
 			$RowNum = 18;
 			foreach ($arr_per_key as $key => $value) {
 				$excel3->setCellValue('G'.$RowNum, $key); 
@@ -570,6 +575,12 @@ class Data extends MY_Controller {
 			// Partner	 
 			$excel2->setActiveSheetIndex(2);
 			$excel3 = $excel2->getActiveSheet();
+
+			$excel3->setCellValue('F12', $Co_singer);
+			$excel3->setCellValue('F13', $Co_title); 
+			$excel3->setCellValue('F14', $Partner); 
+			$excel3->setCellValue('F15', $Pencipta); 
+			$excel3->setCellValue('F16', $NmChanel);
 
 			$RowNum = 18;
 			foreach ($arr_per_key as $key => $value) {
